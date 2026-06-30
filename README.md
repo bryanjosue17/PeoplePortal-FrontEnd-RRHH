@@ -30,8 +30,8 @@ npm run test:watch    # Tests en modo watch
 ```
 src/
   api/            # Clientes HTTP (axios)
-  components/     # Componentes compartidos (Layout)
-  pages/          # Páginas (Dashboard, Employees, EmployeeDetail, Documents, Requests, Announcements)
+  components/     # Componentes compartidos (Layout, ProtectedRoute)
+  pages/          # Páginas (Dashboard, Employees, EmployeeDetail, Documents, Requests, Announcements, Benefits, Reports, AccessDenied)
   test/           # Tests unitarios
   theme/          # Tema MUI
   keycloak.js     # Config Keycloak
