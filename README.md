@@ -59,5 +59,5 @@ Ubicados en `src/test/`:
 ## Despliegue
 
 - **Docker**: `Dockerfile` multi-stage (node build + nginx:alpine)
-- **K8s**: `deploy/k8s/frontend-rrhh.yaml` (NodePort 30082)
+- **K8s**: `k8s/frontend-rrhh.yaml` (NodePort 30082)
 - **Nginx**: Proxy `/api/` → `peopleportal-api-service:80`
