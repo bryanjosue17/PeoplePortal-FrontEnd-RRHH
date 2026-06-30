@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import keycloak from './keycloak';
 import theme from './theme/theme';
 import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Employees from './pages/Employees/Employees';
 import EmployeeDetail from './pages/EmployeeDetail/EmployeeDetail';
@@ -12,6 +13,7 @@ import Requests from './pages/Requests/Requests';
 import Announcements from './pages/Announcements/Announcements';
 import Benefits from './pages/Benefits/Benefits';
 import Reports from './pages/Reports/Reports';
+import AccessDenied from './pages/AccessDenied/AccessDenied';
 
 const eventLogger = (event) => {
   if (event === 'onAuthSuccess') {
@@ -25,19 +27,22 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/employees" element={<Employees />} />
-              <Route path="/employees/:id" element={<EmployeeDetail />} />
-              <Route path="/documents" element={<Documents />} />
-              <Route path="/requests" element={<Requests />} />
-              <Route path="/announcements" element={<Announcements />} />
-          <Route path="/benefits" element={<Benefits />} />
-          <Route path="/reports" element={<Reports />} />
-        </Routes>
-          </Layout>
+          <ProtectedRoute>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/employees" element={<Employees />} />
+                <Route path="/employees/:id" element={<EmployeeDetail />} />
+                <Route path="/documents" element={<Documents />} />
+                <Route path="/requests" element={<Requests />} />
+                <Route path="/announcements" element={<Announcements />} />
+                <Route path="/benefits" element={<Benefits />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/access-denied" element={<AccessDenied />} />
+              </Routes>
+            </Layout>
+          </ProtectedRoute>
         </BrowserRouter>
       </ThemeProvider>
     </ReactKeycloakProvider>
