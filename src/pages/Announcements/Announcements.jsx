@@ -117,19 +117,19 @@ export default function Announcements() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Título" name="title" value={formik.values.title}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.title && Boolean(formik.errors.title)}
                   helperText={formik.touched.title && formik.errors.title} required />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Tipo" name="type" value={formik.values.type}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select>
                   {announcementTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                 </TextField>
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Fecha de Expiración" name="expiresAt" type="date" value={formik.values.expiresAt}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   InputLabelProps={{ shrink: true }} />

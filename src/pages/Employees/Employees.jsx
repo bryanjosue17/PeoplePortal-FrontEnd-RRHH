@@ -131,56 +131,56 @@ export default function Employees() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Keycloak ID" name="keycloakId" value={formik.values.keycloakId}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.keycloakId && Boolean(formik.errors.keycloakId)}
                   helperText={formik.touched.keycloakId && formik.errors.keycloakId} />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Código" name="code" value={formik.values.code}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.code && Boolean(formik.errors.code)}
                   helperText={formik.touched.code && formik.errors.code} required />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Nombre Completo" name="fullName" value={formik.values.fullName}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.fullName && Boolean(formik.errors.fullName)}
                   helperText={formik.touched.fullName && formik.errors.fullName} required />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Email" name="email" value={formik.values.email}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.email && Boolean(formik.errors.email)}
                   helperText={formik.touched.email && formik.errors.email} required />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Teléfono" name="phone" value={formik.values.phone}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.phone && Boolean(formik.errors.phone)}
                   helperText={formik.touched.phone && formik.errors.phone} />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Departamento" name="department" value={formik.values.department}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.department && Boolean(formik.errors.department)}
                   helperText={formik.touched.department && formik.errors.department} />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Cargo" name="position" value={formik.values.position}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.position && Boolean(formik.errors.position)}
                   helperText={formik.touched.position && formik.errors.position} />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Fecha de Contratación" name="hireDate" type="date" value={formik.values.hireDate}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.hireDate && Boolean(formik.errors.hireDate)}
                   helperText={formik.touched.hireDate && formik.errors.hireDate}
                   InputLabelProps={{ shrink: true }} />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Tipo de Contrato" name="contractType" value={formik.values.contractType}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select
                   error={formik.touched.contractType && Boolean(formik.errors.contractType)}
@@ -188,19 +188,19 @@ export default function Employees() {
                   {contractTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                 </TextField>
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Contacto de Emergencia" name="emergencyContact" value={formik.values.emergencyContact}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.emergencyContact && Boolean(formik.errors.emergencyContact)}
                   helperText={formik.touched.emergencyContact && formik.errors.emergencyContact} />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Sitio" name="site" value={formik.values.site}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.site && Boolean(formik.errors.site)}
                   helperText={formik.touched.site && formik.errors.site} />
               </Grid>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Manager ID" name="managerId" value={formik.values.managerId}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.managerId && Boolean(formik.errors.managerId)}
