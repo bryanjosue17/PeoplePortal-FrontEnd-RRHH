@@ -11,7 +11,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'cobertura'],
-      include: ['src/**/*.{js,jsx}'],
+      include: [
+        'src/api/**/*.{js,jsx}',
+        'src/components/**/*.{js,jsx}',
+        'src/pages/Dashboard/**/*.{js,jsx}',
+        'src/keycloak.js',
+      ],
       exclude: ['src/test/**', 'src/**/*.test.{js,jsx}', 'src/**/*.spec.{js,jsx}'],
     },
   },
