@@ -149,14 +149,14 @@ export default function Benefits() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={12} lg={6}>
+              <Grid item xs={12}>
                 <TextField fullWidth label="Nombre" name="name" value={formik.values.name}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.name && Boolean(formik.errors.name)}
                   helperText={formik.touched.name && formik.errors.name} required />
               </Grid>
               {!editingId && (
-                <Grid item xs={12} sm={12} lg={6}>
+                <Grid item xs={12}>
                   <TextField fullWidth label="Tipo" name="type" value={formik.values.type}
                     onChange={formik.handleChange} onBlur={formik.handleBlur} select>
                     {benefitTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
