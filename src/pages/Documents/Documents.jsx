@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import {
   Box, Typography, TextField, Button, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle,
@@ -148,7 +148,7 @@ export default function Documents() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Autocomplete
                   options={employees}
                   getOptionLabel={(opt) => `${opt.fullName} (${opt.code})`}
@@ -161,13 +161,13 @@ export default function Documents() {
                   )}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Nombre del Documento" name="name" value={formik.values.name}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.name && Boolean(formik.errors.name)}
                   helperText={formik.touched.name && formik.errors.name} required />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Tipo" name="type" value={formik.values.type}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select required
                   error={formik.touched.type && Boolean(formik.errors.type)}
@@ -175,18 +175,18 @@ export default function Documents() {
                   {documentTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                 </TextField>
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="URL del Archivo" name="fileUrl" value={formik.values.fileUrl}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.fileUrl && Boolean(formik.errors.fileUrl)}
                   helperText={formik.touched.fileUrl && formik.errors.fileUrl} />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Fecha de Vencimiento" name="expiresAt" type="date" value={formik.values.expiresAt}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.expiresAt && Boolean(formik.errors.expiresAt)}
                   helperText={formik.touched.expiresAt && formik.errors.expiresAt}
-                  InputLabelProps={{ shrink: true }} />
+                  slotProps={{ inputLabel: { shrink: true } }} />
               </Grid>
             </Grid>
           </DialogContent>

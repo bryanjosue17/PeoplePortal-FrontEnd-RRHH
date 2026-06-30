@@ -44,7 +44,7 @@ export default function Dashboard() {
       </Typography>
       <Grid container spacing={3}>
         {summaryCards.map((card) => (
-          <Grid item xs={12} sm={6} md={3} key={card.label}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={card.label}>
             <Card sx={{ borderTop: `4px solid ${card.color}` }}>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -61,22 +61,22 @@ export default function Dashboard() {
       </Grid>
       <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>Acciones Rápidas</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={6} sm={3}>
+        <Grid size={{ xs: 6, sm: 3 }}>
           <Button variant="contained" fullWidth sx={{ py: 2 }} onClick={() => navigate('/employees')}>
             Gestionar Empleados
           </Button>
         </Grid>
-        <Grid item xs={6} sm={3}>
+        <Grid size={{ xs: 6, sm: 3 }}>
           <Button variant="contained" color="secondary" fullWidth sx={{ py: 2 }} onClick={() => navigate('/documents')}>
             Revisar Documentos
           </Button>
         </Grid>
-        <Grid item xs={6} sm={3}>
+        <Grid size={{ xs: 6, sm: 3 }}>
           <Button variant="contained" color="warning" fullWidth sx={{ py: 2 }} onClick={() => navigate('/requests')}>
             Solicitudes
           </Button>
         </Grid>
-        <Grid item xs={6} sm={3}>
+        <Grid size={{ xs: 6, sm: 3 }}>
           <Button variant="contained" color="secondary" fullWidth sx={{ py: 2 }} onClick={() => navigate('/announcements')}>
             Nuevo Comunicado
           </Button>

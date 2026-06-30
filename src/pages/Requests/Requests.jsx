@@ -123,15 +123,15 @@ export default function Requests() {
         <DialogContent>
           {selectedRequest && (
             <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid item xs={6}><Typography variant="caption" color="text.secondary">Empleado</Typography><Typography>{getEmployeeName(selectedRequest.employeeId)}</Typography></Grid>
-              <Grid item xs={6}><Typography variant="caption" color="text.secondary">Tipo</Typography><Typography>{selectedRequest.type}</Typography></Grid>
-              <Grid item xs={6}>
+              <Grid size={6}><Typography variant="caption" color="text.secondary">Empleado</Typography><Typography>{getEmployeeName(selectedRequest.employeeId)}</Typography></Grid>
+              <Grid size={6}><Typography variant="caption" color="text.secondary">Tipo</Typography><Typography>{selectedRequest.type}</Typography></Grid>
+              <Grid size={6}>
                 <Typography variant="caption" color="text.secondary">Estado</Typography>
                 <Typography><Chip label={selectedRequest.status} size="small" color={statusColors[selectedRequest.status] || 'default'} /></Typography>
               </Grid>
-              <Grid item xs={6}><Typography variant="caption" color="text.secondary">Creado</Typography><Typography>{selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleDateString() : '-'}</Typography></Grid>
+              <Grid size={6}><Typography variant="caption" color="text.secondary">Creado</Typography><Typography>{selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleDateString() : '-'}</Typography></Grid>
               {selectedRequest.description && (
-                <Grid item xs={12}><Typography variant="caption" color="text.secondary">Descripción</Typography><Typography>{selectedRequest.description}</Typography></Grid>
+                <Grid size={12}><Typography variant="caption" color="text.secondary">Descripción</Typography><Typography>{selectedRequest.description}</Typography></Grid>
               )}
             </Grid>
           )}

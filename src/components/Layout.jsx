@@ -168,11 +168,15 @@ export default function Layout({ children }) {
       <Box
         component="main"
         sx={{
-          flexGrow: 1, p: { xs: 2, sm: 3 },
-          width: { md: `calc(100% - ${drawerWidth}px)` },
+          flexGrow: 1,
+          p: { xs: 2, sm: 3 },
+          width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+          minWidth: 0,
+          overflow: 'hidden',
           minHeight: '100vh',
           bgcolor: 'background.default',
-          mt: 8
+          mt: 8,
+          boxSizing: 'border-box',
         }}
       >
         {children}

@@ -16,7 +16,7 @@ Panel de administración de Recursos Humanos. Gestiona empleados, documentos, so
 ## Scripts
 
 ```bash
-npm run dev           # Dev server (localhost:5174)
+npm run dev           # Dev server (localhost:5173; usa 5174 si 5173 está ocupado)
 npm run build         # Build producción
 npm run preview       # Preview build
 npm run lint          # Oxlint
