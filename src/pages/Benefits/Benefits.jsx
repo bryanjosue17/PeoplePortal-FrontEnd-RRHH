@@ -14,8 +14,8 @@ import * as yup from 'yup';
 import { getAllBenefits, createBenefit, updateBenefit, deactivateBenefit } from '../../api/benefits';
 
 const typeColors = {
-  Salud: 'error', Educación: 'primary', Alimentación: 'success',
-  Transporte: 'warning', Bienestar: 'secondary', Bonificación: 'info', Descuento: 'default',
+  Salud: 'error', 'Educación': 'primary', 'Alimentación': 'success',
+  Transporte: 'warning', Bienestar: 'secondary', 'Bonificación': 'info', Descuento: 'default',
 };
 
 const benefitTypes = ['Salud', 'Educación', 'Alimentación', 'Transporte', 'Bienestar', 'Bonificación', 'Descuento', 'Otro'];
@@ -113,7 +113,7 @@ export default function Benefits() {
       ) : (
         <Grid container spacing={3}>
           {benefits.map((benefit) => (
-            <Grid item xs={12} sm={6} md={4} key={benefit.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={benefit.id}>
               <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column', opacity: benefit.isActive ? 1 : 0.6 }}>
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
@@ -149,21 +149,21 @@ export default function Benefits() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Nombre" name="name" value={formik.values.name}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.name && Boolean(formik.errors.name)}
                   helperText={formik.touched.name && formik.errors.name} required />
               </Grid>
               {!editingId && (
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <TextField fullWidth label="Tipo" name="type" value={formik.values.type}
                     onChange={formik.handleChange} onBlur={formik.handleBlur} select>
                     {benefitTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                   </TextField>
                 </Grid>
               )}
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Descripción" name="description" multiline rows={3} value={formik.values.description}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.description && Boolean(formik.errors.description)}

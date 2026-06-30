@@ -77,12 +77,12 @@ export default function Announcements() {
       ) : (
         <Grid container spacing={3}>
           {announcements.length === 0 && (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Typography color="text.secondary" align="center">No hay comunicados activos</Typography>
             </Grid>
           )}
           {announcements.map((ann) => (
-            <Grid item xs={12} md={6} key={ann.id}>
+            <Grid size={{ xs: 12, md: 6 }} key={ann.id}>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
@@ -117,24 +117,24 @@ export default function Announcements() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Título" name="title" value={formik.values.title}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.title && Boolean(formik.errors.title)}
                   helperText={formik.touched.title && formik.errors.title} required />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Tipo" name="type" value={formik.values.type}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select>
                   {announcementTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                 </TextField>
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Fecha de Expiración" name="expiresAt" type="date" value={formik.values.expiresAt}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
-                  InputLabelProps={{ shrink: true }} />
+                  slotProps={{ inputLabel: { shrink: true } }} />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Contenido" name="body" multiline rows={4} value={formik.values.body}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.body && Boolean(formik.errors.body)}

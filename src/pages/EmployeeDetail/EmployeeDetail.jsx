@@ -108,7 +108,7 @@ export default function EmployeeDetail() {
           </Box>
           <Grid container spacing={2}>
             {infoRows.map((row) => (
-              <Grid item xs={12} sm={6} md={4} key={row.label}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={row.label}>
                 <Typography variant="caption" color="text.secondary">{row.label}</Typography>
                 <Typography variant="body1">{row.value}</Typography>
               </Grid>
@@ -163,19 +163,19 @@ export default function EmployeeDetail() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Departamento" name="department" value={formik.values.department}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.department && Boolean(formik.errors.department)}
                   helperText={formik.touched.department && formik.errors.department} />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Cargo" name="position" value={formik.values.position}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.position && Boolean(formik.errors.position)}
                   helperText={formik.touched.position && formik.errors.position} />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Tipo de Contrato" name="contractType" value={formik.values.contractType}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select
                   error={formik.touched.contractType && Boolean(formik.errors.contractType)}
@@ -183,7 +183,7 @@ export default function EmployeeDetail() {
                   {contractTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                 </TextField>
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField fullWidth label="Estado" name="status" value={formik.values.status}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select
                   error={formik.touched.status && Boolean(formik.errors.status)}
