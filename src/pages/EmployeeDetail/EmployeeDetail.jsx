@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
+import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { getEmployeeById, updateEmployee } from '../../api/employees';
@@ -39,11 +40,12 @@ export default function EmployeeDetail() {
     onSubmit: async (values) => {
       try {
         await updateEmployee(id, values);
+        toast.success('Empleado actualizado exitosamente');
         setEditOpen(false);
         const res = await getEmployeeById(id);
         setEmployee(res.data);
       } catch {
-        // error
+        toast.error('Error al actualizar empleado');
       }
     },
   });
@@ -161,19 +163,19 @@ export default function EmployeeDetail() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Departamento" name="department" value={formik.values.department}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.department && Boolean(formik.errors.department)}
                   helperText={formik.touched.department && formik.errors.department} />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Cargo" name="position" value={formik.values.position}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.position && Boolean(formik.errors.position)}
                   helperText={formik.touched.position && formik.errors.position} />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Tipo de Contrato" name="contractType" value={formik.values.contractType}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select
                   error={formik.touched.contractType && Boolean(formik.errors.contractType)}
@@ -181,7 +183,7 @@ export default function EmployeeDetail() {
                   {contractTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                 </TextField>
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Estado" name="status" value={formik.values.status}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select
                   error={formik.touched.status && Boolean(formik.errors.status)}
@@ -191,7 +193,7 @@ export default function EmployeeDetail() {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
             <Button onClick={() => setEditOpen(false)}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
               {formik.isSubmitting ? 'Guardando...' : 'Guardar'}

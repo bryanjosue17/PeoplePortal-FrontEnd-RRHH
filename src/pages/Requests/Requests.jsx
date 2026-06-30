@@ -4,6 +4,7 @@ import {
   TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle,
   DialogContent, DialogActions, Chip, CircularProgress, MenuItem, Grid, Stack
 } from '@mui/material';
+import { toast } from 'react-toastify';
 import { getAllRequests, updateRequestStatus } from '../../api/hrRequests';
 import { getAllEmployees } from '../../api/employees';
 
@@ -47,11 +48,12 @@ export default function Requests() {
   const handleStatusChange = async (id, status) => {
     try {
       await updateRequestStatus(id, { status });
+      toast.success(`Solicitud ${status === 'Approved' ? 'aprobada' : 'rechazada'} exitosamente`);
       setDetailOpen(false);
       setSelectedRequest(null);
       load();
     } catch {
-      // error
+      toast.error('Error al actualizar solicitud');
     }
   };
 
@@ -134,7 +136,7 @@ export default function Requests() {
             </Grid>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
           {selectedRequest?.status === 'Pending' && (
             <>
               <Button color="error" variant="contained" onClick={() => handleStatusChange(selectedRequest.id, 'Rejected')}>Rechazar</Button>

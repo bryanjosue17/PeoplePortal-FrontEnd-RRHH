@@ -8,6 +8,7 @@ import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { getAllBenefits, createBenefit, updateBenefit, deactivateBenefit } from '../../api/benefits';
@@ -39,13 +40,15 @@ export default function Benefits() {
       try {
         if (editingId) {
           await updateBenefit(editingId, { name: values.name, description: values.description });
+          toast.success('Beneficio actualizado exitosamente');
         } else {
           await createBenefit({ name: values.name, type: values.type, description: values.description });
+          toast.success('Beneficio creado exitosamente');
         }
         handleClose();
         load();
       } catch (err) {
-        setError(err.message);
+        toast.error(err.message || 'Error al guardar beneficio');
       }
     },
   });
@@ -82,9 +85,10 @@ export default function Benefits() {
     if (!window.confirm(`¿Desactivar beneficio "${name}"?`)) return;
     try {
       await deactivateBenefit(id);
+      toast.success('Beneficio desactivado');
       load();
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message || 'Error al desactivar beneficio');
     }
   };
 
@@ -145,14 +149,14 @@ export default function Benefits() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Nombre" name="name" value={formik.values.name}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.name && Boolean(formik.errors.name)}
                   helperText={formik.touched.name && formik.errors.name} required />
               </Grid>
               {!editingId && (
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid item xs={12} sm={6}>
                   <TextField fullWidth label="Tipo" name="type" value={formik.values.type}
                     onChange={formik.handleChange} onBlur={formik.handleBlur} select>
                     {benefitTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
@@ -167,7 +171,7 @@ export default function Benefits() {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
             <Button onClick={handleClose}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
               {formik.isSubmitting ? 'Guardando...' : 'Guardar'}
