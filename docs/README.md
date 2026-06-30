@@ -73,6 +73,13 @@ Manifiesto: `k8s/frontend-rrhh.yaml`
 - Service: NodePort `:30082`
 - URL local: `http://localhost:30082`
 
+## CI/CD
+
+Pipeline en `.github/workflows/ci.yml`:
+
+1. `build-test`: npm ci → lint → `npm run test:coverage` (reporta a Codacy) → build
+2. `docker`: build + push imagen a GHCR (`peopleportal-frontend-rrhh`)
+
 ## Comandos
 
 ```bash
@@ -81,6 +88,9 @@ npm run dev
 
 # Tests
 npm test
+
+# Tests con cobertura (Codacy)
+npm run test:coverage
 
 # Build producción
 npm run build

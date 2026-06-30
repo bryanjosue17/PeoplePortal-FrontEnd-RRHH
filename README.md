@@ -16,12 +16,13 @@ Panel de administración de Recursos Humanos. Gestiona empleados, documentos, so
 ## Scripts
 
 ```bash
-npm run dev      # Dev server (localhost:5174)
-npm run build    # Build producción
-npm run preview  # Preview build
-npm run lint     # Oxlint
-npm run test     # Tests (vitest run)
-npm run test:watch  # Tests en modo watch
+npm run dev           # Dev server (localhost:5174)
+npm run build         # Build producción
+npm run preview       # Preview build
+npm run lint          # Oxlint
+npm run test          # Tests (vitest run)
+npm run test:coverage # Tests con cobertura (Codacy)
+npm run test:watch    # Tests en modo watch
 ```
 
 ## Estructura
