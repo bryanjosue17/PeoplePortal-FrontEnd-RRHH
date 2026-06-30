@@ -8,21 +8,22 @@ import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { getAllBenefits, createBenefit, updateBenefit, deactivateBenefit } from '../../api/benefits';
 
 const typeColors = {
-  Salud: 'error',
-  Educación: 'primary',
-  Alimentación: 'success',
-  Transporte: 'warning',
-  Bienestar: 'secondary',
-  Bonificación: 'info',
-  Descuento: 'default',
+  Salud: 'error', Educación: 'primary', Alimentación: 'success',
+  Transporte: 'warning', Bienestar: 'secondary', Bonificación: 'info', Descuento: 'default',
 };
 
 const benefitTypes = ['Salud', 'Educación', 'Alimentación', 'Transporte', 'Bienestar', 'Bonificación', 'Descuento', 'Otro'];
 
-const emptyForm = { name: '', type: 'Otro', description: '' };
+const validationSchema = yup.object({
+  name: yup.string().required('Requerido'),
+  type: yup.string(),
+  description: yup.string(),
+});
 
 export default function Benefits() {
   const [benefits, setBenefits] = useState([]);
@@ -30,8 +31,24 @@ export default function Benefits() {
   const [error, setError] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState(emptyForm);
-  const [saving, setSaving] = useState(false);
+
+  const formik = useFormik({
+    initialValues: { name: '', type: 'Otro', description: '' },
+    validationSchema,
+    onSubmit: async (values) => {
+      try {
+        if (editingId) {
+          await updateBenefit(editingId, { name: values.name, description: values.description });
+        } else {
+          await createBenefit({ name: values.name, type: values.type, description: values.description });
+        }
+        handleClose();
+        load();
+      } catch (err) {
+        setError(err.message);
+      }
+    },
+  });
 
   const load = useCallback(() => {
     setLoading(true);
@@ -45,38 +62,20 @@ export default function Benefits() {
 
   const handleOpenCreate = () => {
     setEditingId(null);
-    setForm(emptyForm);
+    formik.resetForm();
     setDialogOpen(true);
   };
 
   const handleOpenEdit = (benefit) => {
     setEditingId(benefit.id);
-    setForm({ name: benefit.name, type: benefit.type, description: benefit.description || '' });
+    formik.setValues({ name: benefit.name, type: benefit.type, description: benefit.description || '' });
     setDialogOpen(true);
   };
 
   const handleClose = () => {
     setDialogOpen(false);
     setEditingId(null);
-    setForm(emptyForm);
-  };
-
-  const handleSave = async () => {
-    if (!form.name.trim()) return;
-    setSaving(true);
-    try {
-      if (editingId) {
-        await updateBenefit(editingId, { name: form.name, description: form.description });
-      } else {
-        await createBenefit({ name: form.name, type: form.type, description: form.description });
-      }
-      handleClose();
-      load();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
+    formik.resetForm();
   };
 
   const handleDeactivate = async (id, name) => {
@@ -90,11 +89,7 @@ export default function Benefits() {
   };
 
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}><CircularProgress /></Box>;
   }
 
   return (
@@ -104,9 +99,7 @@ export default function Benefits() {
           <CardGiftcardIcon color="primary" />
           <Typography variant="h5" fontWeight={600}>Beneficios</Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenCreate}>
-          Nuevo Beneficio
-        </Button>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenCreate}>Nuevo Beneficio</Button>
       </Box>
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -120,9 +113,7 @@ export default function Benefits() {
               <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column', opacity: benefit.isActive ? 1 : 0.6 }}>
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                    <Typography variant="h6" fontWeight={600} sx={{ flex: 1 }}>
-                      {benefit.name}
-                    </Typography>
+                    <Typography variant="h6" fontWeight={600} sx={{ flex: 1 }}>{benefit.name}</Typography>
                     <Chip label={benefit.type} color={typeColors[benefit.type] || 'default'} size="small" sx={{ ml: 1 }} />
                   </Box>
                   <Divider sx={{ my: 1 }} />
@@ -134,15 +125,11 @@ export default function Benefits() {
                   <Chip label={benefit.isActive ? 'Activo' : 'Inactivo'} color={benefit.isActive ? 'success' : 'default'} size="small" variant="outlined" />
                   <Box>
                     <Tooltip title="Editar">
-                      <IconButton size="small" onClick={() => handleOpenEdit(benefit)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
+                      <IconButton size="small" onClick={() => handleOpenEdit(benefit)}><EditIcon fontSize="small" /></IconButton>
                     </Tooltip>
                     {benefit.isActive && (
                       <Tooltip title="Desactivar">
-                        <IconButton size="small" color="error" onClick={() => handleDeactivate(benefit.id, benefit.name)}>
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
+                        <IconButton size="small" color="error" onClick={() => handleDeactivate(benefit.id, benefit.name)}><DeleteIcon fontSize="small" /></IconButton>
                       </Tooltip>
                     )}
                   </Box>
@@ -155,26 +142,38 @@ export default function Benefits() {
 
       <Dialog open={dialogOpen} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{editingId ? 'Editar Beneficio' : 'Nuevo Beneficio'}</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <TextField label="Nombre" required fullWidth value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })} />
-            {!editingId && (
-              <TextField label="Tipo" select fullWidth value={form.type}
-                onChange={(e) => setForm({ ...form, type: e.target.value })}>
-                {benefitTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
-              </TextField>
-            )}
-            <TextField label="Descripción" multiline rows={3} fullWidth value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })} />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSave} disabled={!form.name.trim() || saving}>
-            {saving ? 'Guardando...' : 'Guardar'}
-          </Button>
-        </DialogActions>
+        <Box component="form" onSubmit={formik.handleSubmit}>
+          <DialogContent>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Nombre" name="name" value={formik.values.name}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.name && Boolean(formik.errors.name)}
+                  helperText={formik.touched.name && formik.errors.name} required />
+              </Grid>
+              {!editingId && (
+                <Grid item xs={12} sm={6} md={4}>
+                  <TextField fullWidth label="Tipo" name="type" value={formik.values.type}
+                    onChange={formik.handleChange} onBlur={formik.handleBlur} select>
+                    {benefitTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
+                  </TextField>
+                </Grid>
+              )}
+              <Grid item xs={12}>
+                <TextField fullWidth label="Descripción" name="description" multiline rows={3} value={formik.values.description}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.description && Boolean(formik.errors.description)}
+                  helperText={formik.touched.description && formik.errors.description} />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancelar</Button>
+            <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
+              {formik.isSubmitting ? 'Guardando...' : 'Guardar'}
+            </Button>
+          </DialogActions>
+        </Box>
       </Dialog>
     </Box>
   );

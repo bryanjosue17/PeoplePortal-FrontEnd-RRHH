@@ -20,10 +20,12 @@
     "@react-keycloak/web": "^3.4.0",
     "@react-pdf/renderer": "^4.5.1",
     "axios": "^1.18.1",
+    "formik": "^2.4.9",
     "keycloak-js": "^26.2.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.1"
+    "react-router-dom": "^7.18.1",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
