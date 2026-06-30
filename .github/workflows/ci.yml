@@ -18,6 +18,8 @@ env:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    env:
+      CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
 
     steps:
       - name: Checkout
@@ -35,8 +37,25 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Test
-        run: npm test
+      - name: Test with coverage
+        run: npm run test:coverage
+
+      - name: Codacy coverage reporter
+        if: ${{ env.CODACY_PROJECT_TOKEN != '' }}
+        run: |
+          COVERAGE_FILE=$(find . -type f -name "cobertura-coverage.xml" | head -n 1)
+          if [ -z "$COVERAGE_FILE" ]; then
+            echo "No coverage file found"
+            exit 1
+          fi
+          echo "Reporting coverage file: $COVERAGE_FILE"
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r "$COVERAGE_FILE"
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-results
+          path: '**/coverage/**'
 
       - name: Build
         run: npm run build
