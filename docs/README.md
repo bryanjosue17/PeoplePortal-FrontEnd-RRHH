@@ -58,7 +58,9 @@ GET   /api/hr/reports/pending-documents   → Reporte: documentos pendientes (Re
 - Token almacenado en `sessionStorage` bajo la clave `keycloak-token`
 - Interceptor Axios inyecta `Authorization: Bearer <token>` en todos los requests
 - Realm: `peopleportal` | Client: `peopleportal-frontend`
-- Rol esperado: `hr` o `admin`
+- **Route guard**: `ProtectedRoute` verifica `realm_access.roles` al cargar. Roles permitidos: `hr` o `admin`.
+- Usuarios sin rol → pantalla **Acceso Denegado** con link al portal Colaborador (http://localhost:30081)
+- Cargando: spinner mientras Keycloak inicializa
 
 ## Configuración de entorno
 
