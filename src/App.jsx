@@ -11,6 +11,7 @@ import Documents from './pages/Documents/Documents';
 import Requests from './pages/Requests/Requests';
 import Announcements from './pages/Announcements/Announcements';
 import Benefits from './pages/Benefits/Benefits';
+import Reports from './pages/Reports/Reports';
 
 const eventLogger = (event) => {
   if (event === 'onAuthSuccess') {
@@ -33,8 +34,9 @@ function App() {
               <Route path="/documents" element={<Documents />} />
               <Route path="/requests" element={<Requests />} />
               <Route path="/announcements" element={<Announcements />} />
-              <Route path="/benefits" element={<Benefits />} />
-            </Routes>
+          <Route path="/benefits" element={<Benefits />} />
+          <Route path="/reports" element={<Reports />} />
+        </Routes>
           </Layout>
         </BrowserRouter>
       </ThemeProvider>

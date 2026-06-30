@@ -1,0 +1,92 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/peopleportal-frontend-rrhh
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    env:
+      CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test with coverage
+        run: npm run test:coverage
+
+      - name: Codacy coverage reporter
+        if: ${{ env.CODACY_PROJECT_TOKEN != '' }}
+        run: |
+          COVERAGE_FILE=$(find . -type f -name "cobertura-coverage.xml" | head -n 1)
+          if [ -z "$COVERAGE_FILE" ]; then
+            echo "No coverage file found"
+            exit 1
+          fi
+          echo "Reporting coverage file: $COVERAGE_FILE"
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r "$COVERAGE_FILE"
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-results
+          path: '**/coverage/**'
+
+      - name: Build
+        run: npm run build
+
+  docker:
+    if: github.event_name != 'pull_request'
+    needs: build-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set tags and labels
+        id: meta
+        run: |
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          BRANCH_TAG=${{ github.ref_name }}
+          echo "tags=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${BRANCH_TAG},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
