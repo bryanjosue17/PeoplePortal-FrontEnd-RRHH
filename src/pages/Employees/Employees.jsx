@@ -3,18 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, TextField, Button, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle,
-  DialogContent, DialogActions, Chip, CircularProgress, MenuItem
+  DialogContent, DialogActions, Chip, CircularProgress, MenuItem, Grid
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { getAllEmployees, createEmployee } from '../../api/employees';
 
 const contractTypes = ['Indefinido', 'Temporal', 'Prácticas', 'Freelance'];
-const statusOptions = ['Active', 'Inactive', 'Suspended'];
+
+const validationSchema = yup.object({
+  code: yup.string().required('Requerido'),
+  fullName: yup.string().required('Requerido'),
+  email: yup.string().email('Email inválido').required('Requerido'),
+  keycloakId: yup.string(),
+  phone: yup.string(),
+  department: yup.string(),
+  position: yup.string(),
+  hireDate: yup.string(),
+  contractType: yup.string(),
+  emergencyContact: yup.string(),
+  site: yup.string(),
+  managerId: yup.string(),
+});
 
 const initialForm = {
   keycloakId: '', code: '', fullName: '', email: '', phone: '',
   department: '', position: '', hireDate: '', contractType: '',
-  emergencyContact: '', site: '', managerId: ''
+  emergencyContact: '', site: '', managerId: '',
 };
 
 export default function Employees() {
@@ -23,8 +39,21 @@ export default function Employees() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState(initialForm);
-  const [saving, setSaving] = useState(false);
+
+  const formik = useFormik({
+    initialValues: initialForm,
+    validationSchema,
+    onSubmit: async (values) => {
+      try {
+        await createEmployee(values);
+        setDialogOpen(false);
+        formik.resetForm();
+        load();
+      } catch {
+        // error handled silently
+      }
+    },
+  });
 
   const load = useCallback(() => {
     setLoading(true);
@@ -42,20 +71,9 @@ export default function Employees() {
     (e.email?.toLowerCase() || '').includes(search.toLowerCase())
   );
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      await createEmployee(form);
-      setDialogOpen(false);
-      setForm(initialForm);
-      load();
-    } catch {
-      // error handled silently
-    } finally {
-      setSaving(false);
-    }
+  const handleClose = () => {
+    setDialogOpen(false);
+    formik.resetForm();
   };
 
   return (
@@ -67,12 +85,8 @@ export default function Employees() {
         </Button>
       </Box>
       <TextField
-        fullWidth
-        variant="outlined"
-        placeholder="Buscar por nombre, departamento o email..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        sx={{ mb: 2 }}
+        fullWidth variant="outlined" placeholder="Buscar por nombre, departamento o email..."
+        value={search} onChange={(e) => setSearch(e.target.value)} sx={{ mb: 2 }}
       />
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
@@ -91,60 +105,114 @@ export default function Employees() {
             </TableHead>
             <TableBody>
               {filtered.map((emp) => (
-                <TableRow
-                  key={emp.id}
-                  hover
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => navigate(`/employees/${emp.id}`)}
-                >
+                <TableRow key={emp.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/employees/${emp.id}`)}>
                   <TableCell>{emp.code}</TableCell>
                   <TableCell>{emp.fullName}</TableCell>
                   <TableCell>{emp.email}</TableCell>
                   <TableCell>{emp.department}</TableCell>
                   <TableCell>{emp.position}</TableCell>
                   <TableCell>
-                    <Chip
-                      label={emp.status}
-                      size="small"
-                      color={emp.status === 'Active' ? 'success' : emp.status === 'Suspended' ? 'warning' : 'default'}
-                    />
+                    <Chip label={emp.status} size="small" color={emp.status === 'Active' ? 'success' : emp.status === 'Suspended' ? 'warning' : 'default'} />
                   </TableCell>
                 </TableRow>
               ))}
               {filtered.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} align="center">No se encontraron empleados</TableCell>
-                </TableRow>
+                <TableRow><TableCell colSpan={6} align="center">No se encontraron empleados</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
         </TableContainer>
       )}
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={dialogOpen} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>Añadir Empleado</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <TextField label="Keycloak ID" name="keycloakId" value={form.keycloakId} onChange={handleChange} fullWidth />
-            <TextField label="Código" name="code" value={form.code} onChange={handleChange} fullWidth required />
-            <TextField label="Nombre Completo" name="fullName" value={form.fullName} onChange={handleChange} fullWidth required />
-            <TextField label="Email" name="email" value={form.email} onChange={handleChange} fullWidth required />
-            <TextField label="Teléfono" name="phone" value={form.phone} onChange={handleChange} fullWidth />
-            <TextField label="Departamento" name="department" value={form.department} onChange={handleChange} fullWidth />
-            <TextField label="Cargo" name="position" value={form.position} onChange={handleChange} fullWidth />
-            <TextField label="Fecha de Contratación" name="hireDate" type="date" value={form.hireDate} onChange={handleChange} fullWidth InputLabelProps={{ shrink: true }} />
-            <TextField label="Tipo de Contrato" name="contractType" value={form.contractType} onChange={handleChange} fullWidth select>
-              {contractTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
-            </TextField>
-            <TextField label="Contacto de Emergencia" name="emergencyContact" value={form.emergencyContact} onChange={handleChange} fullWidth />
-            <TextField label="Sitio" name="site" value={form.site} onChange={handleChange} fullWidth />
-            <TextField label="Manager ID" name="managerId" value={form.managerId} onChange={handleChange} fullWidth />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSave} disabled={saving}>{saving ? 'Guardando...' : 'Guardar'}</Button>
-        </DialogActions>
+        <Box component="form" onSubmit={formik.handleSubmit}>
+          <DialogContent>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Keycloak ID" name="keycloakId" value={formik.values.keycloakId}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.keycloakId && Boolean(formik.errors.keycloakId)}
+                  helperText={formik.touched.keycloakId && formik.errors.keycloakId} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Código" name="code" value={formik.values.code}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.code && Boolean(formik.errors.code)}
+                  helperText={formik.touched.code && formik.errors.code} required />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Nombre Completo" name="fullName" value={formik.values.fullName}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.fullName && Boolean(formik.errors.fullName)}
+                  helperText={formik.touched.fullName && formik.errors.fullName} required />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Email" name="email" value={formik.values.email}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email} required />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Teléfono" name="phone" value={formik.values.phone}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.phone && Boolean(formik.errors.phone)}
+                  helperText={formik.touched.phone && formik.errors.phone} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Departamento" name="department" value={formik.values.department}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.department && Boolean(formik.errors.department)}
+                  helperText={formik.touched.department && formik.errors.department} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Cargo" name="position" value={formik.values.position}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.position && Boolean(formik.errors.position)}
+                  helperText={formik.touched.position && formik.errors.position} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Fecha de Contratación" name="hireDate" type="date" value={formik.values.hireDate}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.hireDate && Boolean(formik.errors.hireDate)}
+                  helperText={formik.touched.hireDate && formik.errors.hireDate}
+                  InputLabelProps={{ shrink: true }} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Tipo de Contrato" name="contractType" value={formik.values.contractType}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur} select
+                  error={formik.touched.contractType && Boolean(formik.errors.contractType)}
+                  helperText={formik.touched.contractType && formik.errors.contractType}>
+                  {contractTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
+                </TextField>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Contacto de Emergencia" name="emergencyContact" value={formik.values.emergencyContact}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.emergencyContact && Boolean(formik.errors.emergencyContact)}
+                  helperText={formik.touched.emergencyContact && formik.errors.emergencyContact} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Sitio" name="site" value={formik.values.site}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.site && Boolean(formik.errors.site)}
+                  helperText={formik.touched.site && formik.errors.site} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField fullWidth label="Manager ID" name="managerId" value={formik.values.managerId}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.managerId && Boolean(formik.errors.managerId)}
+                  helperText={formik.touched.managerId && formik.errors.managerId} />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancelar</Button>
+            <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
+              {formik.isSubmitting ? 'Guardando...' : 'Guardar'}
+            </Button>
+          </DialogActions>
+        </Box>
       </Dialog>
     </Box>
   );
