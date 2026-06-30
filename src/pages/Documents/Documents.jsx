@@ -5,6 +5,7 @@ import {
   DialogContent, DialogActions, Chip, CircularProgress, MenuItem, Autocomplete, Stack, Grid
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { getAllDocuments, uploadDocument, updateDocumentStatus } from '../../api/hrDocuments';
@@ -35,12 +36,13 @@ export default function Documents() {
     onSubmit: async (values) => {
       try {
         await uploadDocument({ ...values, employeeId: selectedEmployee?.id || '' });
+        toast.success('Documento subido exitosamente');
         setDialogOpen(false);
         setSelectedEmployee(null);
         formik.resetForm();
         load();
       } catch {
-        // error
+        toast.error('Error al subir documento');
       }
     },
   });
@@ -70,9 +72,10 @@ export default function Documents() {
   const handleStatusChange = async (id, status) => {
     try {
       await updateDocumentStatus(id, { status });
+      toast.success(`Documento ${status === 'Approved' ? 'aprobado' : 'rechazado'} exitosamente`);
       load();
     } catch {
-      // error
+      toast.error('Error al actualizar estado del documento');
     }
   };
 
@@ -145,7 +148,7 @@ export default function Documents() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <Autocomplete
                   options={employees}
                   getOptionLabel={(opt) => `${opt.fullName} (${opt.code})`}
@@ -158,13 +161,13 @@ export default function Documents() {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Nombre del Documento" name="name" value={formik.values.name}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.name && Boolean(formik.errors.name)}
                   helperText={formik.touched.name && formik.errors.name} required />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Tipo" name="type" value={formik.values.type}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select required
                   error={formik.touched.type && Boolean(formik.errors.type)}
@@ -172,13 +175,13 @@ export default function Documents() {
                   {documentTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                 </TextField>
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="URL del Archivo" name="fileUrl" value={formik.values.fileUrl}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.fileUrl && Boolean(formik.errors.fileUrl)}
                   helperText={formik.touched.fileUrl && formik.errors.fileUrl} />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Fecha de Vencimiento" name="expiresAt" type="date" value={formik.values.expiresAt}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.expiresAt && Boolean(formik.errors.expiresAt)}
@@ -187,7 +190,7 @@ export default function Documents() {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
             <Button onClick={handleClose}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
               {formik.isSubmitting ? 'Subiendo...' : 'Subir'}

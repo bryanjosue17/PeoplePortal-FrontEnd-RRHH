@@ -5,6 +5,7 @@ import {
   Chip, CircularProgress, MenuItem
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { getActiveAnnouncements, createAnnouncement } from '../../api/announcements';
@@ -29,11 +30,12 @@ export default function Announcements() {
     onSubmit: async (values) => {
       try {
         await createAnnouncement(values);
+        toast.success('Comunicado creado exitosamente');
         setDialogOpen(false);
         formik.resetForm();
         load();
       } catch {
-        // error
+        toast.error('Error al crear comunicado');
       }
     },
   });
@@ -115,19 +117,19 @@ export default function Announcements() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Título" name="title" value={formik.values.title}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.title && Boolean(formik.errors.title)}
                   helperText={formik.touched.title && formik.errors.title} required />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Tipo" name="type" value={formik.values.type}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select>
                   {announcementTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                 </TextField>
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Fecha de Expiración" name="expiresAt" type="date" value={formik.values.expiresAt}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   InputLabelProps={{ shrink: true }} />
@@ -140,7 +142,7 @@ export default function Announcements() {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions>
+          <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
             <Button onClick={handleClose}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
               {formik.isSubmitting ? 'Creando...' : 'Crear'}
