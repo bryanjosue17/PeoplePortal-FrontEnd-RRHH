@@ -12,6 +12,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const drawerWidth = 240;
@@ -23,6 +24,7 @@ const menuItems = [
   { text: 'Solicitudes', icon: <AssignmentIcon />, path: '/requests' },
   { text: 'Comunicados', icon: <CampaignIcon />, path: '/announcements' },
   { text: 'Beneficios', icon: <CardGiftcardIcon />, path: '/benefits' },
+  { text: 'Reportes', icon: <AssessmentIcon />, path: '/reports' },
 ];
 
 export default function Layout({ children }) {
