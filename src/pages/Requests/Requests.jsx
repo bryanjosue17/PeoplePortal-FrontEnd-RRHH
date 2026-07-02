@@ -10,6 +10,7 @@ import { getAllEmployees } from '../../api/employees';
 
 const statusColors = { Submitted: 'info', InReview: 'warning', Approved: 'success', Rejected: 'error', Cancelled: 'default' };
 const statusLabels = { Submitted: 'Enviado', InReview: 'En Revisión', Approved: 'Aprobado', Rejected: 'Rechazado', Cancelled: 'Cancelado' };
+const typeLabels = { Vacation: 'Vacaciones', Certificate: 'Certificado', Voucher: 'Adelanto de Sueldo', Permission: 'Permiso', DataUpdate: 'Actualización de Datos', Other: 'Otro' };
 
 export default function Requests() {
   const [requests, setRequests] = useState([]);
@@ -98,7 +99,7 @@ export default function Requests() {
               {filtered.map((req) => (
                 <TableRow key={req.id} hover sx={{ cursor: 'pointer' }} onClick={() => handleDetail(req)}>
                   <TableCell>{getEmployeeName(req.employeeId)}</TableCell>
-                  <TableCell>{req.type}</TableCell>
+                  <TableCell>{typeLabels[req.type] ?? req.type}</TableCell>
                   <TableCell>
                     <Chip label={statusLabels[req.status] ?? req.status} size="small" color={statusColors[req.status] || 'default'} />
                   </TableCell>
@@ -127,7 +128,7 @@ export default function Requests() {
           {selectedRequest && (
             <Grid container spacing={2} sx={{ mt: 1 }}>
               <Grid size={6}><Typography variant="caption" color="text.secondary">Empleado</Typography><Typography>{getEmployeeName(selectedRequest.employeeId)}</Typography></Grid>
-              <Grid size={6}><Typography variant="caption" color="text.secondary">Tipo</Typography><Typography>{selectedRequest.type}</Typography></Grid>
+              <Grid size={6}><Typography variant="caption" color="text.secondary">Tipo</Typography><Typography>{typeLabels[selectedRequest.type] ?? selectedRequest.type}</Typography></Grid>
               <Grid size={6}>
                 <Typography variant="caption" color="text.secondary">Estado</Typography>
                 <Typography><Chip label={statusLabels[selectedRequest.status] ?? selectedRequest.status} size="small" color={statusColors[selectedRequest.status] || 'default'} /></Typography>

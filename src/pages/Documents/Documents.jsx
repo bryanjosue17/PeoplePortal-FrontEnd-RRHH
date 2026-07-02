@@ -12,7 +12,8 @@ import { getAllDocuments, uploadDocument, updateDocumentStatus } from '../../api
 import { getAllEmployees } from '../../api/employees';
 
 const documentTypes = ['Contract', 'ID', 'Payroll', 'Tax', 'Medical', 'Other'];
-const statusColors = { Pending: 'warning', Approved: 'success', Rejected: 'error' };
+const statusColors = { Pending: 'warning', Approved: 'success', Rejected: 'error', Available: 'info', InReview: 'warning', Expired: 'default' };
+const statusLabels = { Pending: 'Pendiente', Approved: 'Aprobado', Rejected: 'Rechazado', Available: 'Disponible', InReview: 'En Revisión', Expired: 'Expirado' };
 
 const validationSchema = yup.object({
   name: yup.string().required('Requerido'),
@@ -122,7 +123,7 @@ export default function Documents() {
                     <TableCell>{emp?.fullName ?? <em style={{ color: '#999' }}>Empleado no encontrado</em>}</TableCell>
                     <TableCell>{doc.name}</TableCell>
                     <TableCell>{doc.type}</TableCell>
-                    <TableCell><Chip label={doc.status} size="small" color={statusColors[doc.status] || 'default'} /></TableCell>
+                    <TableCell><Chip label={statusLabels[doc.status] ?? doc.status} size="small" color={statusColors[doc.status] || 'default'} /></TableCell>
                     <TableCell>{doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : '-'}</TableCell>
                     <TableCell>
                       {doc.status === 'Pending' && (
