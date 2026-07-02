@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Box, Typography, Card, CardContent, Grid, Chip, Button, Dialog,
-  DialogTitle, DialogContent, DialogActions, TextField, MenuItem,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, CircularProgress
-} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
-import { toast } from 'react-toastify';
+import {
+  Box, Button, Card, CardContent, Chip, CircularProgress, Dialog, DialogActions,
+  DialogContent, DialogTitle, Grid, MenuItem, Paper,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  TextField, Typography
+} from '@mui/material';
 import { useFormik } from 'formik';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { getEmployeeById, updateEmployee } from '../../api/employees';
 import { getAllDocuments } from '../../api/hrDocuments';
@@ -19,9 +19,9 @@ const contractTypes = ['Indefinido', 'Temporal', 'Prácticas', 'Freelance'];
 const statusOptions = ['Active', 'Inactive', 'Suspended'];
 
 const validationSchema = yup.object({
+  contractType: yup.string(),
   department: yup.string(),
   position: yup.string(),
-  contractType: yup.string(),
   status: yup.string(),
 });
 
@@ -35,8 +35,7 @@ export default function EmployeeDetail() {
   const [editOpen, setEditOpen] = useState(false);
 
   const formik = useFormik({
-    initialValues: { department: '', position: '', contractType: '', status: 'Active' },
-    validationSchema,
+    initialValues: { contractType: '', department: '', position: '', status: 'Active' },
     onSubmit: async (values) => {
       try {
         await updateEmployee(id, values);
@@ -48,6 +47,7 @@ export default function EmployeeDetail() {
         toast.error('Error al actualizar empleado');
       }
     },
+    validationSchema,
   });
 
   useEffect(() => {
@@ -55,9 +55,9 @@ export default function EmployeeDetail() {
       .then(([empRes, docRes, reqRes]) => {
         setEmployee(empRes.data);
         formik.setValues({
+          contractType: empRes.data.contractType || '',
           department: empRes.data.department || '',
           position: empRes.data.position || '',
-          contractType: empRes.data.contractType || '',
           status: empRes.data.status || 'Active',
         });
         const docs = Array.isArray(docRes.data) ? docRes.data : [];
@@ -100,15 +100,15 @@ export default function EmployeeDetail() {
 
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1, sm: 0 } }}>
+          <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 2 }}>
             <Typography variant="h5">Información del Empleado</Typography>
-            <Button variant="outlined" startIcon={<EditIcon />} onClick={() => { setEditOpen(true); formik.setValues({ department: employee.department || '', position: employee.position || '', contractType: employee.contractType || '', status: employee.status || 'Active' }); }} sx={{ width: { xs: '100%', sm: 'auto' } }}>
+            <Button variant="outlined" startIcon={<EditIcon />} onClick={() => { setEditOpen(true); formik.setValues({ contractType: employee.contractType || '', department: employee.department || '', position: employee.position || '', status: employee.status || 'Active' }); }} sx={{ width: { sm: 'auto', xs: '100%' } }}>
               Editar
             </Button>
           </Box>
           <Grid container spacing={2}>
             {infoRows.map((row) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={row.label}>
+              <Grid size={{ md: 4, sm: 6, xs: 12 }} key={row.label}>
                 <Typography variant="caption" color="text.secondary">{row.label}</Typography>
                 <Typography variant="body1">{row.value}</Typography>
               </Grid>
@@ -193,7 +193,7 @@ export default function EmployeeDetail() {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
+          <DialogActions sx={{ justifyContent: 'flex-start', pb: 2, px: 3 }}>
             <Button onClick={() => setEditOpen(false)}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
               {formik.isSubmitting ? 'Guardando...' : 'Guardar'}

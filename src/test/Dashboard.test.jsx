@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect, vi } from 'vitest';
+import { expect, it, vi } from 'vitest';
 
 vi.mock('@react-keycloak/web', () => ({
   useKeycloak: () => ({
@@ -26,10 +26,10 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-import { getAllEmployees } from '../api/employees';
-import { getAllRequests } from '../api/hrRequests';
-import { getAllDocuments } from '../api/hrDocuments';
 import { getActiveAnnouncements } from '../api/announcements';
+import { getAllEmployees } from '../api/employees';
+import { getAllDocuments } from '../api/hrDocuments';
+import { getAllRequests } from '../api/hrRequests';
 
 async function renderDashboard() {
   const Dashboard = (await import('../pages/Dashboard/Dashboard')).default;

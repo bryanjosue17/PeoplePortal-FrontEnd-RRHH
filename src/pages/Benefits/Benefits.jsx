@@ -1,29 +1,29 @@
-import { useState, useEffect, useCallback } from 'react';
-import {
-  Box, Typography, Grid, Card, CardContent, Chip, CircularProgress,
-  Alert, Paper, Divider, Button, Dialog, DialogTitle, DialogContent,
-  DialogActions, TextField, MenuItem, IconButton, Tooltip
-} from '@mui/material';
-import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { toast } from 'react-toastify';
+import EditIcon from '@mui/icons-material/Edit';
+import {
+  Alert, Box, Button, Card, CardContent, Chip, CircularProgress,
+  Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, IconButton,
+  MenuItem,
+  TextField, Tooltip, Typography
+} from '@mui/material';
 import { useFormik } from 'formik';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
-import { getAllBenefits, createBenefit, updateBenefit, deactivateBenefit } from '../../api/benefits';
+import { createBenefit, deactivateBenefit, getAllBenefits, updateBenefit } from '../../api/benefits';
 
 const typeColors = {
-  Salud: 'error', 'Educación': 'primary', 'Alimentación': 'success',
-  Transporte: 'warning', Bienestar: 'secondary', 'Bonificación': 'info', Descuento: 'default',
+  'Alimentación': 'success', Bienestar: 'secondary', 'Bonificación': 'info', Descuento: 'default', 'Educación': 'primary', Salud: 'error', Transporte: 'warning',
 };
 
 const benefitTypes = ['Salud', 'Educación', 'Alimentación', 'Transporte', 'Bienestar', 'Bonificación', 'Descuento', 'Otro'];
 
 const validationSchema = yup.object({
+  description: yup.string(),
   name: yup.string().required('Requerido'),
   type: yup.string(),
-  description: yup.string(),
 });
 
 export default function Benefits() {
@@ -34,8 +34,7 @@ export default function Benefits() {
   const [editingId, setEditingId] = useState(null);
 
   const formik = useFormik({
-    initialValues: { name: '', type: 'Otro', description: '' },
-    validationSchema,
+    initialValues: { description: '', name: '', type: 'Otro' },
     onSubmit: async (values) => {
       try {
         if (editingId) {
@@ -51,6 +50,7 @@ export default function Benefits() {
         toast.error(err.message || 'Error al guardar beneficio');
       }
     },
+    validationSchema,
   });
 
   const load = useCallback(() => {
@@ -71,7 +71,7 @@ export default function Benefits() {
 
   const handleOpenEdit = (benefit) => {
     setEditingId(benefit.id);
-    formik.setValues({ name: benefit.name, type: benefit.type, description: benefit.description || '' });
+    formik.setValues({ description: benefit.description || '', name: benefit.name, type: benefit.type });
     setDialogOpen(true);
   };
 
@@ -82,7 +82,7 @@ export default function Benefits() {
   };
 
   const handleDeactivate = async (id, name) => {
-    if (!window.confirm(`¿Desactivar beneficio "${name}"?`)) return;
+    if (!window.confirm(`¿Desactivar beneficio "${name}"?`)) {return;}
     try {
       await deactivateBenefit(id);
       toast.success('Beneficio desactivado');
@@ -98,8 +98,8 @@ export default function Benefits() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+        <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
           <CardGiftcardIcon color="primary" />
           <Typography variant="h5" fontWeight={600}>Beneficios</Typography>
         </Box>
@@ -113,10 +113,10 @@ export default function Benefits() {
       ) : (
         <Grid container spacing={3}>
           {benefits.map((benefit) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={benefit.id}>
-              <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column', opacity: benefit.isActive ? 1 : 0.6 }}>
+            <Grid size={{ md: 4, sm: 6, xs: 12 }} key={benefit.id}>
+              <Card variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%', opacity: benefit.isActive ? 1 : 0.6 }}>
                 <CardContent sx={{ flexGrow: 1 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                  <Box sx={{ alignItems: 'flex-start', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="h6" fontWeight={600} sx={{ flex: 1 }}>{benefit.name}</Typography>
                     <Chip label={benefit.type} color={typeColors[benefit.type] || 'default'} size="small" sx={{ ml: 1 }} />
                   </Box>
@@ -125,7 +125,7 @@ export default function Benefits() {
                     <Typography variant="body2" color="text.secondary">{benefit.description}</Typography>
                   )}
                 </CardContent>
-                <Box sx={{ px: 2, pb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', pb: 1.5, px: 2 }}>
                   <Chip label={benefit.isActive ? 'Activo' : 'Inactivo'} color={benefit.isActive ? 'success' : 'default'} size="small" variant="outlined" />
                   <Box>
                     <Tooltip title="Editar">
@@ -171,7 +171,7 @@ export default function Benefits() {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
+          <DialogActions sx={{ justifyContent: 'flex-start', pb: 2, px: 3 }}>
             <Button onClick={handleClose}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
               {formik.isSubmitting ? 'Guardando...' : 'Guardar'}

@@ -1,16 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
 import {
-  Box, Typography, TextField, Button, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle,
-  DialogContent, DialogActions, Chip, CircularProgress, MenuItem, Grid, Stack
+  Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
+  DialogTitle, Grid, MenuItem, Paper, Stack, Table,
+  TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography
 } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getAllRequests, updateRequestStatus } from '../../api/hrRequests';
 import { getAllEmployees } from '../../api/employees';
+import { getAllRequests, updateRequestStatus } from '../../api/hrRequests';
 
-const statusColors = { Submitted: 'info', InReview: 'warning', Approved: 'success', Rejected: 'error', Cancelled: 'default' };
-const statusLabels = { Submitted: 'Enviado', InReview: 'En Revisión', Approved: 'Aprobado', Rejected: 'Rechazado', Cancelled: 'Cancelado' };
-const typeLabels = { Vacation: 'Vacaciones', Certificate: 'Certificado', Voucher: 'Adelanto de Sueldo', Permission: 'Permiso', DataUpdate: 'Actualización de Datos', Other: 'Otro' };
+const statusColors = { Approved: 'success', Cancelled: 'default', InReview: 'warning', Rejected: 'error', Submitted: 'info' };
+const statusLabels = { Approved: 'Aprobado', Cancelled: 'Cancelado', InReview: 'En Revisión', Rejected: 'Rechazado', Submitted: 'Enviado' };
+const typeLabels = { Certificate: 'Certificado', DataUpdate: 'Actualización de Datos', Other: 'Otro', Permission: 'Permiso', Vacation: 'Vacaciones', Voucher: 'Adelanto de Sueldo' };
 
 export default function Requests() {
   const [requests, setRequests] = useState([]);
@@ -67,12 +67,12 @@ export default function Requests() {
   return (
     <Box>
       <Typography variant="h4" sx={{ mb: 3 }}>Solicitudes</Typography>
-      <Box sx={{ display: 'flex', gap: 2, mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-        <TextField select label="Tipo" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} sx={{ minWidth: { xs: '100%', sm: 150 } }}>
+      <Box sx={{ display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2, mb: 2 }}>
+        <TextField select label="Tipo" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} sx={{ minWidth: { sm: 150, xs: '100%' } }}>
           <MenuItem value="">Todos</MenuItem>
           {types.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
         </TextField>
-        <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { xs: '100%', sm: 150 } }}>
+        <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { sm: 150, xs: '100%' } }}>
           <MenuItem value="">Todos</MenuItem>
           <MenuItem value="Submitted">Enviado</MenuItem>
           <MenuItem value="InReview">En Revisión</MenuItem>
@@ -106,7 +106,7 @@ export default function Requests() {
                   <TableCell>{req.createdAtUtc ? new Date(req.createdAtUtc).toLocaleDateString('es-GT') : '-'}</TableCell>
                   <TableCell>
                     {(req.status === 'Submitted' || req.status === 'InReview') && (
-                      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={0.5} onClick={(e) => e.stopPropagation()}>
+                      <Stack direction={{ sm: 'row', xs: 'column' }} spacing={0.5} onClick={(e) => e.stopPropagation()}>
                         <Button size="small" color="success" variant="outlined" onClick={() => handleStatusChange(req.id, 'Approved')}>Aprobar</Button>
                         <Button size="small" color="error" variant="outlined" onClick={() => handleStatusChange(req.id, 'Rejected')}>Rechazar</Button>
                       </Stack>
@@ -140,7 +140,7 @@ export default function Requests() {
             </Grid>
           )}
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
+        <DialogActions sx={{ justifyContent: 'flex-start', pb: 2, px: 3 }}>
           {(selectedRequest?.status === 'Submitted' || selectedRequest?.status === 'InReview') && (
             <>
               <Button color="error" variant="contained" onClick={() => handleStatusChange(selectedRequest.id, 'Rejected')}>Rechazar</Button>

@@ -4,20 +4,20 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setupTests.js',
-    css: false,
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'cobertura'],
+      exclude: ['src/test/**', 'src/**/*.test.{js,jsx}', 'src/**/*.spec.{js,jsx}'],
       include: [
         'src/api/**/*.{js,jsx}',
         'src/components/**/*.{js,jsx}',
         'src/pages/Dashboard/**/*.{js,jsx}',
         'src/keycloak.js',
       ],
-      exclude: ['src/test/**', 'src/**/*.test.{js,jsx}', 'src/**/*.spec.{js,jsx}'],
+      provider: 'v8',
+      reporter: ['text', 'cobertura'],
     },
+    css: false,
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/test/setupTests.js',
   },
 })

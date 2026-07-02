@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useKeycloak } from '@react-keycloak/web';
-import {
-  Grid, Card, CardContent, Typography, Button, Box, CircularProgress
-} from '@mui/material';
-import PeopleIcon from '@mui/icons-material/People';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import DescriptionIcon from '@mui/icons-material/Description';
 import CampaignIcon from '@mui/icons-material/Campaign';
-import { getAllEmployees } from '../../api/employees';
-import { getAllRequests } from '../../api/hrRequests';
-import { getAllDocuments } from '../../api/hrDocuments';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PeopleIcon from '@mui/icons-material/People';
+import {
+  Box, Button, Card, CardContent, CircularProgress, Grid, Typography
+} from '@mui/material';
+import { useKeycloak } from '@react-keycloak/web';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getActiveAnnouncements } from '../../api/announcements';
+import { getAllEmployees } from '../../api/employees';
+import { getAllDocuments } from '../../api/hrDocuments';
+import { getAllRequests } from '../../api/hrRequests';
 
 export default function Dashboard() {
   const { keycloak } = useKeycloak();
@@ -32,9 +32,9 @@ export default function Dashboard() {
         const activeDocuments = Array.isArray(docRes.data) ? docRes.data.length : 0;
         const recentAnnouncements = Array.isArray(annRes.data) ? annRes.data.length : 0;
         
-        setData({ totalEmployees, pendingRequests, activeDocuments, recentAnnouncements });
+        setData({ activeDocuments, pendingRequests, recentAnnouncements, totalEmployees });
       })
-      .catch(() => setData({ totalEmployees: 0, pendingRequests: 0, activeDocuments: 0, recentAnnouncements: 0 }))
+      .catch(() => setData({ activeDocuments: 0, pendingRequests: 0, recentAnnouncements: 0, totalEmployees: 0 }))
       .finally(() => setLoading(false));
   }, []);
 
@@ -43,10 +43,10 @@ export default function Dashboard() {
   }
 
   const summaryCards = [
-    { label: 'Total Empleados', value: data?.totalEmployees ?? 0, icon: <PeopleIcon sx={{ fontSize: 40 }} />, color: '#2e7d32' },
-    { label: 'Solicitudes Activas', value: data?.pendingRequests ?? 0, icon: <AssignmentIcon sx={{ fontSize: 40 }} />, color: '#ed6c02' },
-    { label: 'Documentos Activos', value: data?.activeDocuments ?? 0, icon: <DescriptionIcon sx={{ fontSize: 40 }} />, color: '#1565c0' },
-    { label: 'Comunicados Recientes', value: data?.recentAnnouncements ?? 0, icon: <CampaignIcon sx={{ fontSize: 40 }} />, color: '#9c27b0' },
+    { color: '#2e7d32', icon: <PeopleIcon sx={{ fontSize: 40 }} />, label: 'Total Empleados', value: data?.totalEmployees ?? 0 },
+    { color: '#ed6c02', icon: <AssignmentIcon sx={{ fontSize: 40 }} />, label: 'Solicitudes Activas', value: data?.pendingRequests ?? 0 },
+    { color: '#1565c0', icon: <DescriptionIcon sx={{ fontSize: 40 }} />, label: 'Documentos Activos', value: data?.activeDocuments ?? 0 },
+    { color: '#9c27b0', icon: <CampaignIcon sx={{ fontSize: 40 }} />, label: 'Comunicados Recientes', value: data?.recentAnnouncements ?? 0 },
   ];
 
   return (
@@ -59,10 +59,10 @@ export default function Dashboard() {
       </Typography>
       <Grid container spacing={3}>
         {summaryCards.map((card) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={card.label}>
+          <Grid size={{ md: 3, sm: 6, xs: 12 }} key={card.label}>
             <Card sx={{ borderTop: `4px solid ${card.color}` }}>
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
                   <Box>
                     <Typography variant="h3" fontWeight="bold">{card.value}</Typography>
                     <Typography variant="body2" color="text.secondary">{card.label}</Typography>
@@ -74,24 +74,24 @@ export default function Dashboard() {
           </Grid>
         ))}
       </Grid>
-      <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>Acciones Rápidas</Typography>
+      <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>Acciones Rápidas</Typography>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 6, sm: 3 }}>
+        <Grid size={{ sm: 3, xs: 6 }}>
           <Button variant="contained" fullWidth sx={{ py: 2 }} onClick={() => navigate('/employees')}>
             Gestionar Empleados
           </Button>
         </Grid>
-        <Grid size={{ xs: 6, sm: 3 }}>
+        <Grid size={{ sm: 3, xs: 6 }}>
           <Button variant="contained" color="secondary" fullWidth sx={{ py: 2 }} onClick={() => navigate('/documents')}>
             Revisar Documentos
           </Button>
         </Grid>
-        <Grid size={{ xs: 6, sm: 3 }}>
+        <Grid size={{ sm: 3, xs: 6 }}>
           <Button variant="contained" color="warning" fullWidth sx={{ py: 2 }} onClick={() => navigate('/requests')}>
             Solicitudes
           </Button>
         </Grid>
-        <Grid size={{ xs: 6, sm: 3 }}>
+        <Grid size={{ sm: 3, xs: 6 }}>
           <Button variant="contained" color="secondary" fullWidth sx={{ py: 2 }} onClick={() => navigate('/announcements')}>
             Nuevo Comunicado
           </Button>

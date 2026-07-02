@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const apiClientMock = {
+  delete: vi.fn(),
   get: vi.fn(),
+  patch: vi.fn(),
   post: vi.fn(),
   put: vi.fn(),
-  patch: vi.fn(),
-  delete: vi.fn(),
 };
 
 vi.mock('../api/client', () => ({
@@ -19,7 +19,7 @@ describe('API modules - FrontEnd RRHH', () => {
 
   it('announcements usa endpoints correctos', async () => {
     const { getActiveAnnouncements, createAnnouncement } = await import('../api/announcements');
-    const payload = { title: 'Comunicado', body: 'Texto', type: 'General' };
+    const payload = { body: 'Texto', title: 'Comunicado', type: 'General' };
 
     getActiveAnnouncements();
     createAnnouncement(payload);
@@ -30,7 +30,7 @@ describe('API modules - FrontEnd RRHH', () => {
 
   it('benefits usa endpoints correctos', async () => {
     const { getAllBenefits, createBenefit, updateBenefit, deactivateBenefit } = await import('../api/benefits');
-    const payload = { name: 'Seguro', description: 'Seguro medico', type: 'Salud' };
+    const payload = { description: 'Seguro medico', name: 'Seguro', type: 'Salud' };
 
     getAllBenefits();
     createBenefit(payload);
@@ -51,7 +51,7 @@ describe('API modules - FrontEnd RRHH', () => {
 
   it('employees usa endpoints correctos', async () => {
     const { getAllEmployees, getEmployeeById, createEmployee, updateEmployee } = await import('../api/employees');
-    const payload = { fullName: 'Ana Perez', email: 'ana@corp.com' };
+    const payload = { email: 'ana@corp.com', fullName: 'Ana Perez' };
 
     getAllEmployees();
     getEmployeeById('e-1');
@@ -80,7 +80,7 @@ describe('API modules - FrontEnd RRHH', () => {
 
   it('hrRequests usa endpoints correctos', async () => {
     const { getAllRequests, updateRequestStatus } = await import('../api/hrRequests');
-    const payload = { status: 'Approved', comment: 'OK' };
+    const payload = { comment: 'OK', status: 'Approved' };
 
     getAllRequests();
     updateRequestStatus('r-1', payload);

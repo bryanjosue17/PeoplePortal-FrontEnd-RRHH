@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, expect, it, vi } from 'vitest';
 
 vi.mock('keycloak-js', () => ({
-  default: vi.fn(function MockKeycloak(config) {
+  default: vi.fn((config) => {
     return { ...config };
   }),
 }));
@@ -16,9 +16,9 @@ it('uses VITE_KEYCLOAK_URL when set', async () => {
   await import('../keycloak');
   const keycloakJs = await import('keycloak-js');
   expect(keycloakJs.default).toHaveBeenCalledWith({
-    url: 'http://keycloak:8080',
-    realm: 'peopleportal',
     clientId: 'peopleportal-frontend',
+    realm: 'peopleportal',
+    url: 'http://keycloak:8080',
   });
 });
 
@@ -26,9 +26,9 @@ it('falls back to default URL when VITE_KEYCLOAK_URL is not set', async () => {
   await import('../keycloak');
   const keycloakJs = await import('keycloak-js');
   expect(keycloakJs.default).toHaveBeenCalledWith({
-    url: 'http://localhost:8080',
-    realm: 'peopleportal',
     clientId: 'peopleportal-frontend',
+    realm: 'peopleportal',
+    url: 'http://localhost:8080',
   });
 });
 
