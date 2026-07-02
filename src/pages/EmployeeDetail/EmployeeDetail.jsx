@@ -62,8 +62,8 @@ export default function EmployeeDetail() {
         });
         const docs = Array.isArray(docRes.data) ? docRes.data : [];
         const reqs = Array.isArray(reqRes.data) ? reqRes.data : [];
-        setDocuments(docs.filter((d) => d.employeeId === id || d.employeeId === empRes.data.employeeId));
-        setRequests(reqs.filter((r) => r.employeeId === id || r.employeeId === empRes.data.employeeId));
+        setDocuments(docs.filter((d) => d.employeeId === id || d.employeeId === empRes.data.keycloakId || d.employeeId === empRes.data.id));
+        setRequests(reqs.filter((r) => r.employeeId === id || r.employeeId === empRes.data.keycloakId || r.employeeId === empRes.data.id));
       })
       .catch(() => setEmployee(null))
       .finally(() => setLoading(false));

@@ -59,7 +59,7 @@ export default function Requests() {
   };
 
   const getEmployeeName = (empId) => {
-    const emp = employees.find((e) => e.id === empId);
+    const emp = employees.find((e) => e.id === empId || e.keycloakId === empId);
     return emp?.fullName || empId;
   };
 

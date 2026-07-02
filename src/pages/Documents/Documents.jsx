@@ -61,7 +61,7 @@ export default function Documents() {
   useEffect(() => { load(); }, [load]);
 
   const filtered = documents.filter((d) => {
-    const emp = employees.find((e) => e.id === d.employeeId);
+    const emp = employees.find((e) => e.id === d.employeeId || e.keycloakId === d.employeeId);
     const empName = emp?.fullName || '';
     const matchSearch = empName.toLowerCase().includes(search.toLowerCase()) ||
       (d.name || '').toLowerCase().includes(search.toLowerCase());
@@ -116,7 +116,7 @@ export default function Documents() {
             </TableHead>
             <TableBody>
               {filtered.map((doc) => {
-                const emp = employees.find((e) => e.id === doc.employeeId);
+                const emp = employees.find((e) => e.id === doc.employeeId || e.keycloakId === doc.employeeId);
                 return (
                   <TableRow key={doc.id}>
                     <TableCell>{emp?.fullName ?? <em style={{ color: '#999' }}>Empleado no encontrado</em>}</TableCell>

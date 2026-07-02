@@ -8,7 +8,10 @@ import PeopleIcon from '@mui/icons-material/People';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CampaignIcon from '@mui/icons-material/Campaign';
-import { getDashboard } from '../../api/dashboard';
+import { getAllEmployees } from '../../api/employees';
+import { getAllRequests } from '../../api/hrRequests';
+import { getAllDocuments } from '../../api/hrDocuments';
+import { getActiveAnnouncements } from '../../api/announcements';
 
 export default function Dashboard() {
   const { keycloak } = useKeycloak();
@@ -17,9 +20,21 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getDashboard()
-      .then((res) => setData(res.data))
-      .catch(() => setData(null))
+    Promise.all([
+      getAllEmployees(),
+      getAllRequests(),
+      getAllDocuments(),
+      getActiveAnnouncements()
+    ])
+      .then(([empRes, reqRes, docRes, annRes]) => {
+        const totalEmployees = Array.isArray(empRes.data) ? empRes.data.length : 0;
+        const pendingRequests = Array.isArray(reqRes.data) ? reqRes.data.filter(r => r.status === 'Submitted' || r.status === 'InReview').length : 0;
+        const activeDocuments = Array.isArray(docRes.data) ? docRes.data.length : 0;
+        const recentAnnouncements = Array.isArray(annRes.data) ? annRes.data.length : 0;
+        
+        setData({ totalEmployees, pendingRequests, activeDocuments, recentAnnouncements });
+      })
+      .catch(() => setData({ totalEmployees: 0, pendingRequests: 0, activeDocuments: 0, recentAnnouncements: 0 }))
       .finally(() => setLoading(false));
   }, []);
 
