@@ -8,7 +8,8 @@ import { toast } from 'react-toastify';
 import { getAllRequests, updateRequestStatus } from '../../api/hrRequests';
 import { getAllEmployees } from '../../api/employees';
 
-const statusColors = { Pending: 'warning', Approved: 'success', Rejected: 'error' };
+const statusColors = { Submitted: 'info', InReview: 'warning', Approved: 'success', Rejected: 'error', Cancelled: 'default' };
+const statusLabels = { Submitted: 'Enviado', InReview: 'En Revisión', Approved: 'Aprobado', Rejected: 'Rechazado', Cancelled: 'Cancelado' };
 
 export default function Requests() {
   const [requests, setRequests] = useState([]);
@@ -72,9 +73,11 @@ export default function Requests() {
         </TextField>
         <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { xs: '100%', sm: 150 } }}>
           <MenuItem value="">Todos</MenuItem>
-          <MenuItem value="Pending">Pendiente</MenuItem>
+          <MenuItem value="Submitted">Enviado</MenuItem>
+          <MenuItem value="InReview">En Revisión</MenuItem>
           <MenuItem value="Approved">Aprobado</MenuItem>
           <MenuItem value="Rejected">Rechazado</MenuItem>
+          <MenuItem value="Cancelled">Cancelado</MenuItem>
         </TextField>
       </Box>
       {loading ? (
@@ -97,11 +100,11 @@ export default function Requests() {
                   <TableCell>{getEmployeeName(req.employeeId)}</TableCell>
                   <TableCell>{req.type}</TableCell>
                   <TableCell>
-                    <Chip label={req.status} size="small" color={statusColors[req.status] || 'default'} />
+                    <Chip label={statusLabels[req.status] ?? req.status} size="small" color={statusColors[req.status] || 'default'} />
                   </TableCell>
-                  <TableCell>{req.createdAt ? new Date(req.createdAt).toLocaleDateString() : '-'}</TableCell>
+                  <TableCell>{req.createdAtUtc ? new Date(req.createdAtUtc).toLocaleDateString('es-GT') : '-'}</TableCell>
                   <TableCell>
-                    {req.status === 'Pending' && (
+                    {(req.status === 'Submitted' || req.status === 'InReview') && (
                       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={0.5} onClick={(e) => e.stopPropagation()}>
                         <Button size="small" color="success" variant="outlined" onClick={() => handleStatusChange(req.id, 'Approved')}>Aprobar</Button>
                         <Button size="small" color="error" variant="outlined" onClick={() => handleStatusChange(req.id, 'Rejected')}>Rechazar</Button>
@@ -127,9 +130,9 @@ export default function Requests() {
               <Grid size={6}><Typography variant="caption" color="text.secondary">Tipo</Typography><Typography>{selectedRequest.type}</Typography></Grid>
               <Grid size={6}>
                 <Typography variant="caption" color="text.secondary">Estado</Typography>
-                <Typography><Chip label={selectedRequest.status} size="small" color={statusColors[selectedRequest.status] || 'default'} /></Typography>
+                <Typography><Chip label={statusLabels[selectedRequest.status] ?? selectedRequest.status} size="small" color={statusColors[selectedRequest.status] || 'default'} /></Typography>
               </Grid>
-              <Grid size={6}><Typography variant="caption" color="text.secondary">Creado</Typography><Typography>{selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleDateString() : '-'}</Typography></Grid>
+              <Grid size={6}><Typography variant="caption" color="text.secondary">Creado</Typography><Typography>{selectedRequest.createdAtUtc ? new Date(selectedRequest.createdAtUtc).toLocaleDateString('es-GT') : '-'}</Typography></Grid>
               {selectedRequest.description && (
                 <Grid size={12}><Typography variant="caption" color="text.secondary">Descripción</Typography><Typography>{selectedRequest.description}</Typography></Grid>
               )}
@@ -137,7 +140,7 @@ export default function Requests() {
           )}
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
-          {selectedRequest?.status === 'Pending' && (
+          {(selectedRequest?.status === 'Submitted' || selectedRequest?.status === 'InReview') && (
             <>
               <Button color="error" variant="contained" onClick={() => handleStatusChange(selectedRequest.id, 'Rejected')}>Rechazar</Button>
               <Button color="success" variant="contained" onClick={() => handleStatusChange(selectedRequest.id, 'Approved')}>Aprobar</Button>

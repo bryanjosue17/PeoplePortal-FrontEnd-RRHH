@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Box, Typography, TextField, Button, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle,
@@ -119,7 +119,7 @@ export default function Documents() {
                 const emp = employees.find((e) => e.id === doc.employeeId);
                 return (
                   <TableRow key={doc.id}>
-                    <TableCell>{emp?.fullName || doc.employeeId}</TableCell>
+                    <TableCell>{emp?.fullName ?? <em style={{ color: '#999' }}>Empleado no encontrado</em>}</TableCell>
                     <TableCell>{doc.name}</TableCell>
                     <TableCell>{doc.type}</TableCell>
                     <TableCell><Chip label={doc.status} size="small" color={statusColors[doc.status] || 'default'} /></TableCell>

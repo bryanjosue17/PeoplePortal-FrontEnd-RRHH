@@ -60,6 +60,8 @@ function PdfDocument({ title, children }) {
   );
 }
 
+const statusLabels = { Submitted: 'Enviado', InReview: 'En Revisión', Approved: 'Aprobado', Rejected: 'Rechazado', Cancelled: 'Cancelado' };
+
 function RequestsByStatusPDF({ data }) {
   return (
     <PdfDocument title="Solicitudes por Estado">
@@ -71,7 +73,7 @@ function RequestsByStatusPDF({ data }) {
         </View>
         {data.map((row, i) => (
           <View key={i} style={pdfStyles.row}>
-            <Text style={pdfStyles.cell}>{row.status}</Text>
+            <Text style={pdfStyles.cell}>{statusLabels[row.status] ?? row.status}</Text>
             <Text style={pdfStyles.cell}>{row.count}</Text>
           </View>
         ))}

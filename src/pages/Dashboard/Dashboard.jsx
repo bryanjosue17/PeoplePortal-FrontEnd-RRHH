@@ -29,7 +29,7 @@ export default function Dashboard() {
 
   const summaryCards = [
     { label: 'Total Empleados', value: data?.totalEmployees ?? 0, icon: <PeopleIcon sx={{ fontSize: 40 }} />, color: '#2e7d32' },
-    { label: 'Solicitudes Pendientes', value: data?.pendingRequests ?? 0, icon: <AssignmentIcon sx={{ fontSize: 40 }} />, color: '#ed6c02' },
+    { label: 'Solicitudes Activas', value: data?.pendingRequests ?? 0, icon: <AssignmentIcon sx={{ fontSize: 40 }} />, color: '#ed6c02' },
     { label: 'Documentos Activos', value: data?.activeDocuments ?? 0, icon: <DescriptionIcon sx={{ fontSize: 40 }} />, color: '#1565c0' },
     { label: 'Comunicados Recientes', value: data?.recentAnnouncements ?? 0, icon: <CampaignIcon sx={{ fontSize: 40 }} />, color: '#9c27b0' },
   ];
