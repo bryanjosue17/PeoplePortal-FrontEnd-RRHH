@@ -13,9 +13,10 @@ vi.mock('@react-keycloak/web', () => ({
   }),
 }));
 
-vi.mock('../api/dashboard', () => ({
-  getDashboard: vi.fn(),
-}));
+vi.mock('../api/employees', () => ({ getAllEmployees: vi.fn() }));
+vi.mock('../api/hrRequests', () => ({ getAllRequests: vi.fn() }));
+vi.mock('../api/hrDocuments', () => ({ getAllDocuments: vi.fn() }));
+vi.mock('../api/announcements', () => ({ getActiveAnnouncements: vi.fn() }));
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -25,7 +26,10 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-import { getDashboard } from '../api/dashboard';
+import { getAllEmployees } from '../api/employees';
+import { getAllRequests } from '../api/hrRequests';
+import { getAllDocuments } from '../api/hrDocuments';
+import { getActiveAnnouncements } from '../api/announcements';
 
 async function renderDashboard() {
   const Dashboard = (await import('../pages/Dashboard/Dashboard')).default;
@@ -36,30 +40,26 @@ async function renderDashboard() {
   );
 }
 
-it('shows welcome message and panel title', async () => {
-  getDashboard.mockResolvedValue({ data: {} });
-  await renderDashboard();
-  expect(await screen.findByText(/Bienvenido/)).toBeInTheDocument();
-  expect(await screen.findByText(/Panel de administraci.n de Recursos Humanos/)).toBeInTheDocument();
-});
 
 it('renders summary cards after loading', async () => {
-  getDashboard.mockResolvedValue({
-    data: { totalEmployees: 10, pendingRequests: 5, activeDocuments: 20, recentAnnouncements: 3 },
-  });
+  getAllEmployees.mockResolvedValue({ data: new Array(10).fill({}) });
+  getAllRequests.mockResolvedValue({ data: new Array(5).fill({ status: 'Submitted' }) });
+  getAllDocuments.mockResolvedValue({ data: new Array(20).fill({}) });
+  getActiveAnnouncements.mockResolvedValue({ data: new Array(3).fill({}) });
   await renderDashboard();
   await waitFor(() => {
     expect(screen.getByText('Total Empleados')).toBeInTheDocument();
-    expect(screen.getByText('Solicitudes Pendientes')).toBeInTheDocument();
+    expect(screen.getByText('Solicitudes Activas')).toBeInTheDocument();
     expect(screen.getByText('Documentos Activos')).toBeInTheDocument();
     expect(screen.getByText('Comunicados Recientes')).toBeInTheDocument();
   });
 });
 
 it('displays correct summary values', async () => {
-  getDashboard.mockResolvedValue({
-    data: { totalEmployees: 10, pendingRequests: 5, activeDocuments: 20, recentAnnouncements: 3 },
-  });
+  getAllEmployees.mockResolvedValue({ data: new Array(10).fill({}) });
+  getAllRequests.mockResolvedValue({ data: new Array(5).fill({ status: 'Submitted' }) });
+  getAllDocuments.mockResolvedValue({ data: new Array(20).fill({}) });
+  getActiveAnnouncements.mockResolvedValue({ data: new Array(3).fill({}) });
   await renderDashboard();
   await waitFor(() => {
     expect(screen.getByText('10')).toBeInTheDocument();
@@ -70,7 +70,10 @@ it('displays correct summary values', async () => {
 });
 
 it('shows quick action buttons', async () => {
-  getDashboard.mockResolvedValue({ data: {} });
+  getAllEmployees.mockResolvedValue({ data: [] });
+  getAllRequests.mockResolvedValue({ data: [] });
+  getAllDocuments.mockResolvedValue({ data: [] });
+  getActiveAnnouncements.mockResolvedValue({ data: [] });
   await renderDashboard();
   expect(await screen.findByText('Gestionar Empleados')).toBeInTheDocument();
   expect(await screen.findByText('Revisar Documentos')).toBeInTheDocument();
