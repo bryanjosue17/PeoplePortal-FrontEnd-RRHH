@@ -1,7 +1,7 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 
 vi.mock('keycloak-js', () => ({
-  default: vi.fn((config) => {
+  default: vi.fn(function(config) {
     return { ...config };
   }),
 }));
