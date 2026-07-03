@@ -4,7 +4,7 @@
 
 | Ruta | Componente | Descripción |
 |---|---|---|
-| `/dashboard` | `Dashboard.jsx` | KPIs: empleados activos, solicitudes pendientes, documentos, comunicados |
+| `/dashboard` | `Dashboard.jsx` | KPIs + sección "Análisis Rápido" con charts (Doughnut solicitudes/estado, Bar empleados/departamento) |
 | `/employees` | `Employees.jsx` | Listado paginado con búsqueda y creación de empleados |
 | `/employees/:id` | `EmployeeDetail.jsx` | Detalle completo del empleado (perfil, documentos, solicitudes) |
 | `/documents` | `Documents.jsx` | Gestión de documentos de todos los colaboradores (paginado, filtros) |
@@ -12,7 +12,7 @@
 | `/announcements` | `Announcements.jsx` | Publicar, visualizar y desactivar comunicados internos |
 | `/benefits` | `Benefits.jsx` | Catálogo CRUD: crear, editar y desactivar beneficios |
 | `/vouchers` | `Vouchers.jsx` | Gestión de vouchers de pago: crear, subir archivos (nómina) |
-| `/reports` | `Reports.jsx` | Reportes dinámicos + exportación PDF |
+| `/reports` | `Reports.jsx` | 5 reportes con charts interactivos (Chart.js), tablas con `%` y diferencial vs promedio, PDFs completos con barras visuales y Reporte General consolidado (2 páginas) |
 | `/access-denied` | `AccessDenied.jsx` | Pantalla para usuarios sin rol `hr` o `admin` |
 
 ---
@@ -40,13 +40,13 @@ PeoplePortal-FrontEnd-RRHH/
 │   ├── pages/
 │   │   ├── Announcements/
 │   │   ├── Benefits/
-│   │   ├── Dashboard/
+│   │   ├── Dashboard/             ← KPIs + charts Doughnut + Bar (chart.js)
 │   │   ├── Documents/
 │   │   ├── EmployeeDetail/
 │   │   ├── Employees/
-│   │   ├── Reports/
+│   │   ├── Reports/               ← 5 charts + 5 PDFs individuales + Reporte General PDF
 │   │   ├── Requests/
-│   │   ├── Vouchers/              ← Nueva sección de gestión de vouchers
+│   │   ├── Vouchers/
 │   │   └── AccessDenied/
 │   ├── test/
 │   ├── theme/
