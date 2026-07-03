@@ -1,11 +1,11 @@
-import { Box, Typography, Button, Paper } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
+import { Box, Button, Paper, Typography } from '@mui/material';
 
 export default function AccessDenied() {
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: 'background.default' }}>
-      <Paper elevation={3} sx={{ p: 6, textAlign: 'center', maxWidth: 480 }}>
-        <LockIcon sx={{ fontSize: 64, color: 'error.main', mb: 2 }} />
+    <Box sx={{ alignItems: 'center', bgcolor: 'background.default', display: 'flex', justifyContent: 'center', minHeight: '100vh' }}>
+      <Paper elevation={3} sx={{ maxWidth: 480, p: 6, textAlign: 'center' }}>
+        <LockIcon sx={{ color: 'error.main', fontSize: 64, mb: 2 }} />
         <Typography variant="h5" gutterBottom fontWeight={700}>
           Acceso Denegado
         </Typography>

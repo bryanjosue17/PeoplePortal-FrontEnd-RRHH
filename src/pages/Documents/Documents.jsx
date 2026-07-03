@@ -1,24 +1,26 @@
-﻿import { useState, useEffect, useCallback } from 'react';
-import {
-  Box, Typography, TextField, Button, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle,
-  DialogContent, DialogActions, Chip, CircularProgress, MenuItem, Autocomplete, Stack, Grid
-} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { toast } from 'react-toastify';
+import SearchIcon from '@mui/icons-material/Search';
+import {
+  Autocomplete, Box, Button, Chip, CircularProgress, Dialog, DialogActions,
+  DialogContent, DialogTitle, Grid, InputAdornment, MenuItem, Paper, Stack,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography
+} from '@mui/material';
 import { useFormik } from 'formik';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
-import { getAllDocuments, uploadDocument, updateDocumentStatus } from '../../api/hrDocuments';
 import { getAllEmployees } from '../../api/employees';
+import { getAllDocuments, updateDocumentStatus, uploadDocument } from '../../api/hrDocuments';
 
 const documentTypes = ['Contract', 'ID', 'Payroll', 'Tax', 'Medical', 'Other'];
-const statusColors = { Pending: 'warning', Approved: 'success', Rejected: 'error' };
+const statusColors = { Approved: 'success', Available: 'info', Expired: 'default', InReview: 'warning', Pending: 'warning', Rejected: 'error' };
+const statusLabels = { Approved: 'Aprobado', Available: 'Disponible', Expired: 'Expirado', InReview: 'En Revisión', Pending: 'Pendiente', Rejected: 'Rechazado' };
 
 const validationSchema = yup.object({
+  expiresAt: yup.string(),
+  fileUrl: yup.string(),
   name: yup.string().required('Requerido'),
   type: yup.string().required('Requerido'),
-  fileUrl: yup.string(),
-  expiresAt: yup.string(),
 });
 
 export default function Documents() {
@@ -31,8 +33,7 @@ export default function Documents() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const formik = useFormik({
-    initialValues: { name: '', type: '', fileUrl: '', expiresAt: '' },
-    validationSchema,
+    initialValues: { expiresAt: '', fileUrl: '', name: '', type: '' },
     onSubmit: async (values) => {
       try {
         await uploadDocument({ ...values, employeeId: selectedEmployee?.id || '' });
@@ -45,6 +46,7 @@ export default function Documents() {
         toast.error('Error al subir documento');
       }
     },
+    validationSchema,
   });
 
   const load = useCallback(() => {
@@ -61,7 +63,7 @@ export default function Documents() {
   useEffect(() => { load(); }, [load]);
 
   const filtered = documents.filter((d) => {
-    const emp = employees.find((e) => e.id === d.employeeId);
+    const emp = employees.find((e) => e.id === d.employeeId || e.keycloakId === d.employeeId);
     const empName = emp?.fullName || '';
     const matchSearch = empName.toLowerCase().includes(search.toLowerCase()) ||
       (d.name || '').toLowerCase().includes(search.toLowerCase());
@@ -87,22 +89,26 @@ export default function Documents() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1, sm: 0 } }}>
-        <Typography variant="h4">Documentos</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { xs: '100%', sm: 'auto' } }}>
+      <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
+        <Typography variant="h4" fontWeight={700}>Documentos</Typography>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
           Subir Documento
         </Button>
       </Box>
-      <Box sx={{ display: 'flex', gap: 2, mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-        <TextField fullWidth variant="outlined" placeholder="Buscar por empleado o nombre..."
-          value={search} onChange={(e) => setSearch(e.target.value)} />
-        <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { xs: '100%', sm: 150 } }}>
-          <MenuItem value="">Todos</MenuItem>
-          <MenuItem value="Pending">Pendiente</MenuItem>
-          <MenuItem value="Approved">Aprobado</MenuItem>
-          <MenuItem value="Rejected">Rechazado</MenuItem>
-        </TextField>
-      </Box>
+      <Paper sx={{ mb: 2, p: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2 }}>
+          <TextField fullWidth variant="outlined" placeholder="Buscar por empleado o nombre..."
+            value={search} onChange={(e) => setSearch(e.target.value)} size="small"
+            slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.disabled' }} /></InputAdornment> } }}
+          />
+          <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { sm: 160, xs: '100%' } }} size="small">
+            <MenuItem value="">Todos los estados</MenuItem>
+            <MenuItem value="Pending">Pendiente</MenuItem>
+            <MenuItem value="Approved">Aprobado</MenuItem>
+            <MenuItem value="Rejected">Rechazado</MenuItem>
+          </TextField>
+        </Box>
+      </Paper>
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
@@ -110,23 +116,27 @@ export default function Documents() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Empleado</TableCell><TableCell>Nombre</TableCell><TableCell>Tipo</TableCell>
-                <TableCell>Estado</TableCell><TableCell>Subido</TableCell><TableCell>Acciones</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Empleado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Nombre</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Subido</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filtered.map((doc) => {
-                const emp = employees.find((e) => e.id === doc.employeeId);
+                const emp = employees.find((e) => e.id === doc.employeeId || e.keycloakId === doc.employeeId);
                 return (
                   <TableRow key={doc.id}>
-                    <TableCell>{emp?.fullName || doc.employeeId}</TableCell>
+                    <TableCell>{emp?.fullName ?? <Typography component="span" variant="body2" color="text.disabled" fontStyle="italic">Empleado no encontrado</Typography>}</TableCell>
                     <TableCell>{doc.name}</TableCell>
                     <TableCell>{doc.type}</TableCell>
-                    <TableCell><Chip label={doc.status} size="small" color={statusColors[doc.status] || 'default'} /></TableCell>
+                    <TableCell><Chip label={statusLabels[doc.status] ?? doc.status} size="small" color={statusColors[doc.status] || 'default'} /></TableCell>
                     <TableCell>{doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : '-'}</TableCell>
                     <TableCell>
                       {doc.status === 'Pending' && (
-                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={0.5}>
+                        <Stack direction={{ sm: 'row', xs: 'column' }} spacing={0.5}>
                           <Button size="small" color="success" variant="outlined" onClick={() => handleStatusChange(doc.id, 'Approved')}>Aprobar</Button>
                           <Button size="small" color="error" variant="outlined" onClick={() => handleStatusChange(doc.id, 'Rejected')}>Rechazar</Button>
                         </Stack>
@@ -190,7 +200,7 @@ export default function Documents() {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
+          <DialogActions sx={{ justifyContent: 'flex-start', pb: 2, px: 3 }}>
             <Button onClick={handleClose}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
               {formik.isSubmitting ? 'Subiendo...' : 'Subir'}

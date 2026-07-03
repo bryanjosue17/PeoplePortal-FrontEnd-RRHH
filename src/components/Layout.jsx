@@ -1,32 +1,36 @@
-import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useKeycloak } from '@react-keycloak/web';
-import {
-  AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItemButton,
-  ListItemIcon, ListItemText, Box, Avatar, Menu, MenuItem, Divider
-} from '@mui/material';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import MenuIcon from '@mui/icons-material/Menu';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import PeopleIcon from '@mui/icons-material/People';
-import DescriptionIcon from '@mui/icons-material/Description';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
-import AssessmentIcon from '@mui/icons-material/Assessment';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import DescriptionIcon from '@mui/icons-material/Description';
 import LogoutIcon from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
+import PeopleIcon from '@mui/icons-material/People';
+import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
+import {
+  AppBar, Avatar, Box, Divider, Drawer, IconButton, List,
+  ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Typography
+} from '@mui/material';
+import { useKeycloak } from '@react-keycloak/web';
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useThemeContext } from '../context/ThemeContext';
 
 const drawerWidth = 240;
 
 const menuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-  { text: 'Empleados', icon: <PeopleIcon />, path: '/employees' },
-  { text: 'Documentos', icon: <DescriptionIcon />, path: '/documents' },
-  { text: 'Solicitudes', icon: <AssignmentIcon />, path: '/requests' },
-  { text: 'Comunicados', icon: <CampaignIcon />, path: '/announcements' },
-  { text: 'Beneficios', icon: <CardGiftcardIcon />, path: '/benefits' },
-  { text: 'Reportes', icon: <AssessmentIcon />, path: '/reports' },
+  { icon: <DashboardIcon />, path: '/dashboard', text: 'Dashboard' },
+  { icon: <PeopleIcon />, path: '/employees', text: 'Empleados' },
+  { icon: <DescriptionIcon />, path: '/documents', text: 'Documentos' },
+  { icon: <AssignmentIcon />, path: '/requests', text: 'Solicitudes' },
+  { icon: <CampaignIcon />, path: '/announcements', text: 'Comunicados' },
+  { icon: <CardGiftcardIcon />, path: '/benefits', text: 'Beneficios' },
+  { icon: <AssessmentIcon />, path: '/reports', text: 'Reportes' },
 ];
 
 export default function Layout({ children }) {
@@ -36,6 +40,9 @@ export default function Layout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const { themeMode, toggleThemeMode } = useThemeContext();
+  const [themeAnchorEl, setThemeAnchorEl] = useState(null);
+
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
   const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -44,37 +51,59 @@ export default function Layout({ children }) {
     keycloak.logout();
   };
 
+  const handleThemeMenuOpen = (e) => setThemeAnchorEl(e.currentTarget);
+  const handleThemeMenuClose = () => setThemeAnchorEl(null);
+  const handleThemeSelect = (mode) => {
+    toggleThemeMode(mode);
+    handleThemeMenuClose();
+  };
+
+  const getThemeIcon = () => {
+    if (themeMode === 'light') return <Brightness7Icon />;
+    if (themeMode === 'dark') return <Brightness4Icon />;
+    return <SettingsBrightnessIcon />;
+  };
+
   const token = keycloak?.tokenParsed;
   const userName = token?.name || token?.preferred_username || 'Usuario';
   const userEmail = token?.email || '';
   const userAvatar = userName.charAt(0).toUpperCase();
 
   const drawer = (
-    <Box>
-      <Box sx={{ p: 2, textAlign: 'center' }}>
-        <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
-          PeoplePortal
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          RRHH
-        </Typography>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Box sx={{ alignItems: 'center', display: 'flex', gap: 1.5, p: 2.5, pb: 2 }}>
+        <Box
+          sx={{
+            alignItems: 'center',
+            background: 'linear-gradient(135deg, #34D399, #10B981)',
+            borderRadius: 2,
+            color: '#022C22',
+            display: 'flex',
+            fontSize: 18,
+            fontWeight: 800,
+            height: 36,
+            justifyContent: 'center',
+            width: 36,
+          }}
+        >
+          P
+        </Box>
+        <Box>
+          <Typography variant="subtitle1" sx={{ color: 'text.primary', fontWeight: 700, lineHeight: 1.2 }}>
+            PeoplePortal
+          </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            RRHH
+          </Typography>
+        </Box>
       </Box>
       <Divider />
-      <List>
+      <List sx={{ flexGrow: 1, pt: 1 }}>
         {menuItems.map((item) => (
           <ListItemButton
             key={item.path}
             selected={location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path))}
             onClick={() => { navigate(item.path); setMobileOpen(false); }}
-            sx={{
-              mx: 1, borderRadius: 2, mb: 0.5,
-              '&.Mui-selected': {
-                backgroundColor: 'primary.main',
-                color: 'white',
-                '&:hover': { backgroundColor: 'primary.dark' },
-                '& .MuiListItemIcon-root': { color: 'white' },
-              }
-            }}
           >
             <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
@@ -89,11 +118,8 @@ export default function Layout({ children }) {
       <AppBar
         position="fixed"
         sx={{
-          width: { md: `calc(100% - ${drawerWidth}px)` },
           ml: { md: `${drawerWidth}px` },
-          bgcolor: 'white',
-          color: 'text.primary',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          width: { md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
         <Toolbar>
@@ -101,20 +127,42 @@ export default function Layout({ children }) {
             color="inherit"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' } }}
+            sx={{ display: { md: 'none' }, mr: 2 }}
           >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             {menuItems.find(i => location.pathname === i.path || (i.path !== '/dashboard' && location.pathname.startsWith(i.path)))?.text || 'RRHH'}
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+            <IconButton color="inherit" onClick={handleThemeMenuOpen} sx={{ mr: 1, color: 'text.secondary' }}>
+              {getThemeIcon()}
+            </IconButton>
+            <Menu
+              anchorEl={themeAnchorEl}
+              open={Boolean(themeAnchorEl)}
+              onClose={handleThemeMenuClose}
+            >
+              <MenuItem onClick={() => handleThemeSelect('light')} selected={themeMode === 'light'}>
+                <ListItemIcon><Brightness7Icon fontSize="small" /></ListItemIcon>
+                Claro
+              </MenuItem>
+              <MenuItem onClick={() => handleThemeSelect('dark')} selected={themeMode === 'dark'}>
+                <ListItemIcon><Brightness4Icon fontSize="small" /></ListItemIcon>
+                Oscuro
+              </MenuItem>
+              <MenuItem onClick={() => handleThemeSelect('system')} selected={themeMode === 'system'}>
+                <ListItemIcon><SettingsBrightnessIcon fontSize="small" /></ListItemIcon>
+                Sistema
+              </MenuItem>
+            </Menu>
+
+            <Typography variant="body2" sx={{ display: { sm: 'block', xs: 'none' } }}>
               {userName}
             </Typography>
             <Avatar
               onClick={handleMenuOpen}
-              sx={{ bgcolor: 'primary.main', cursor: 'pointer', width: 36, height: 36, fontSize: 16 }}
+              sx={{ bgcolor: 'primary.main', cursor: 'pointer', fontSize: 16, height: 36, width: 36 }}
             >
               {userAvatar}
             </Avatar>
@@ -122,8 +170,8 @@ export default function Layout({ children }) {
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             >
               <MenuItem disabled>
                 <Typography variant="body2" color="text.secondary">{userEmail}</Typography>
@@ -139,7 +187,7 @@ export default function Layout({ children }) {
 
       <Box
         component="nav"
-        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+        sx={{ flexShrink: { md: 0 }, width: { md: drawerWidth } }}
       >
         <Drawer
           variant="temporary"
@@ -147,8 +195,8 @@ export default function Layout({ children }) {
           onClose={handleDrawerToggle}
           ModalProps={{ keepMounted: true }}
           sx={{
-            display: { xs: 'block', md: 'none' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            display: { md: 'none', xs: 'block' },
           }}
         >
           {drawer}
@@ -156,8 +204,8 @@ export default function Layout({ children }) {
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: 'none', md: 'block' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            display: { md: 'block', xs: 'none' },
           }}
           open
         >
@@ -168,15 +216,15 @@ export default function Layout({ children }) {
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
-          p: { xs: 2, sm: 3 },
-          width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
-          minWidth: 0,
-          overflow: 'hidden',
-          minHeight: '100vh',
           bgcolor: 'background.default',
-          mt: 8,
           boxSizing: 'border-box',
+          flexGrow: 1,
+          minHeight: '100vh',
+          minWidth: 0,
+          mt: 8,
+          overflow: 'hidden',
+          p: { sm: 3, xs: 2 },
+          width: { md: `calc(100% - ${drawerWidth}px)`, xs: '100%' },
         }}
       >
         {children}

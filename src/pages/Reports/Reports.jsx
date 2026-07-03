@@ -1,28 +1,28 @@
-import { useState, useEffect, useCallback } from 'react';
-import {
-  Box, Typography, Grid, Card, CardContent, CircularProgress,
-  Alert, Button, Paper, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Chip
-} from '@mui/material';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import {
-  getRequestsByStatus, getRequestsByType, getRequestsOverTime,
-  getActiveEmployees, getPendingDocuments
+  Alert, Box, Button, Card, CardContent, Chip,
+  CircularProgress, Grid, Paper, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, Typography
+} from '@mui/material';
+import { Document, PDFDownloadLink, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  getActiveEmployees, getPendingDocuments, getRequestsByStatus,
+  getRequestsByType, getRequestsOverTime
 } from '../../api/reports';
 
 const pdfStyles = StyleSheet.create({
-  page: { padding: 30, fontSize: 11, fontFamily: 'Helvetica' },
-  title: { fontSize: 18, marginBottom: 20, textAlign: 'center', fontWeight: 'bold' },
-  subtitle: { fontSize: 14, marginBottom: 10, marginTop: 15, fontWeight: 'bold' },
-  table: { marginTop: 10 },
-  row: { flexDirection: 'row', borderBottom: '1 solid #ccc', paddingVertical: 4 },
-  headerRow: { flexDirection: 'row', borderBottom: '2 solid #333', paddingVertical: 4, fontWeight: 'bold' },
   cell: { flex: 1, paddingHorizontal: 4 },
-  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 },
+  footer: { color: '#888', fontSize: 9, marginTop: 30, textAlign: 'center' },
+  headerRow: { borderBottom: '2 solid #333', flexDirection: 'row', fontWeight: 'bold', paddingVertical: 4 },
+  page: { fontFamily: 'Helvetica', fontSize: 11, padding: 30 },
+  row: { borderBottom: '1 solid #ccc', flexDirection: 'row', paddingVertical: 4 },
+  subtitle: { fontSize: 14, fontWeight: 'bold', marginBottom: 10, marginTop: 15 },
   summaryLabel: { fontWeight: 'bold' },
-  footer: { marginTop: 30, textAlign: 'center', fontSize: 9, color: '#888' },
+  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 },
+  table: { marginTop: 10 },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
 });
 
 function ReportTable({ data, columns }) {
@@ -60,6 +60,8 @@ function PdfDocument({ title, children }) {
   );
 }
 
+const statusLabels = { Approved: 'Aprobado', Cancelled: 'Cancelado', InReview: 'En Revisión', Rejected: 'Rechazado', Submitted: 'Enviado' };
+
 function RequestsByStatusPDF({ data }) {
   return (
     <PdfDocument title="Solicitudes por Estado">
@@ -71,7 +73,7 @@ function RequestsByStatusPDF({ data }) {
         </View>
         {data.map((row, i) => (
           <View key={i} style={pdfStyles.row}>
-            <Text style={pdfStyles.cell}>{row.status}</Text>
+            <Text style={pdfStyles.cell}>{statusLabels[row.status] ?? row.status}</Text>
             <Text style={pdfStyles.cell}>{row.count}</Text>
           </View>
         ))}
@@ -216,16 +218,16 @@ export default function Reports() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+      <Box sx={{ alignItems: 'center', display: 'flex', gap: 1, mb: 3 }}>
         <AssessmentIcon color="primary" />
-        <Typography variant="h5" fontWeight={600}>Reportes</Typography>
+        <Typography variant="h4" fontWeight={700}>Reportes</Typography>
       </Box>
 
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card variant="outlined">
+        <Grid size={{ md: 6, xs: 12 }}>
+          <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">Solicitudes por Estado</Typography>
                 {statusData.length > 0 && (
                   <DownloadButton label="solicitudes-por-estado" document={<RequestsByStatusPDF data={statusData} />} />
@@ -239,10 +241,10 @@ export default function Reports() {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card variant="outlined">
+        <Grid size={{ md: 6, xs: 12 }}>
+          <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">Solicitudes por Tipo</Typography>
                 {typeData.length > 0 && (
                   <DownloadButton label="solicitudes-por-tipo" document={<RequestsByTypePDF data={typeData} />} />
@@ -256,10 +258,10 @@ export default function Reports() {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card variant="outlined">
+        <Grid size={{ md: 6, xs: 12 }}>
+          <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">Solicitudes en el Tiempo</Typography>
                 {overTimeData.length > 0 && (
                   <DownloadButton label="solicitudes-en-el-tiempo" document={<RequestsOverTimePDF data={overTimeData} />} />
@@ -273,10 +275,10 @@ export default function Reports() {
           </Card>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card variant="outlined">
+        <Grid size={{ md: 6, xs: 12 }}>
+          <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">Empleados Activos</Typography>
                 {employeesData && (
                   <DownloadButton label="empleados-activos" document={<ActiveEmployeesPDF data={employeesData} />} />
@@ -284,8 +286,8 @@ export default function Reports() {
               </Box>
               {employeesData && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
-                  {Object.entries({ Total: 'total', Activos: 'active', 'En Licencia': 'onLeave', Inactivos: 'inactive', Terminados: 'terminated' }).map(([label, key]) => (
-                    <Box key={key} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  {Object.entries({ Activos: 'active', 'En Licencia': 'onLeave', Inactivos: 'inactive', Terminados: 'terminated', Total: 'total' }).map(([label, key]) => (
+                    <Box key={key} sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
                       <Typography variant="body2" color="text.secondary">{label}</Typography>
                       <Chip label={employeesData[key]} size="small" color={key === 'active' ? 'success' : key === 'total' ? 'primary' : 'default'} />
                     </Box>
@@ -297,9 +299,9 @@ export default function Reports() {
         </Grid>
 
         <Grid size={12}>
-          <Card variant="outlined">
+          <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">Documentos Pendientes por Empleado</Typography>
                 {pendingDocsData.length > 0 && (
                   <DownloadButton label="documentos-pendientes" document={<PendingDocumentsPDF data={pendingDocsData} />} />

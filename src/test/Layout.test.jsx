@@ -1,17 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect, vi } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import Layout from '../components/Layout';
 
 vi.mock('@react-keycloak/web', () => ({
   useKeycloak: () => ({
     keycloak: {
+      logout: vi.fn(),
       tokenParsed: {
-        name: 'Admin User',
         email: 'admin@test.com',
+        name: 'Admin User',
         preferred_username: 'admin',
       },
-      logout: vi.fn(),
     },
   }),
 }));

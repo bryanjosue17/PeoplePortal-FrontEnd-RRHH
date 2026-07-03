@@ -1,10 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, expect, it, vi } from 'vitest';
 
 let interceptorFn;
 
 vi.mock('axios', () => {
   interceptorFn = null;
   const mockAxiosInstance = {
+    defaults: {},
     interceptors: {
       request: {
         use: vi.fn((fn) => {
@@ -12,7 +13,6 @@ vi.mock('axios', () => {
         }),
       },
     },
-    defaults: {},
   };
   return {
     default: {

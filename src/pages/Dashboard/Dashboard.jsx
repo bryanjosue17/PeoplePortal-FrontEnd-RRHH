@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useKeycloak } from '@react-keycloak/web';
-import {
-  Grid, Card, CardContent, Typography, Button, Box, CircularProgress
-} from '@mui/material';
-import PeopleIcon from '@mui/icons-material/People';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import DescriptionIcon from '@mui/icons-material/Description';
 import CampaignIcon from '@mui/icons-material/Campaign';
-import { getDashboard } from '../../api/dashboard';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PeopleIcon from '@mui/icons-material/People';
+import {
+  Box, Button, Card, CardContent, CircularProgress, Grid, Typography
+} from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import { useKeycloak } from '@react-keycloak/web';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getActiveAnnouncements } from '../../api/announcements';
+import { getAllEmployees } from '../../api/employees';
+import { getAllDocuments } from '../../api/hrDocuments';
+import { getAllRequests } from '../../api/hrRequests';
 
 export default function Dashboard() {
   const { keycloak } = useKeycloak();
@@ -17,9 +21,21 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getDashboard()
-      .then((res) => setData(res.data))
-      .catch(() => setData(null))
+    Promise.all([
+      getAllEmployees(),
+      getAllRequests(),
+      getAllDocuments(),
+      getActiveAnnouncements()
+    ])
+      .then(([empRes, reqRes, docRes, annRes]) => {
+        const totalEmployees = Array.isArray(empRes.data) ? empRes.data.length : 0;
+        const pendingRequests = Array.isArray(reqRes.data) ? reqRes.data.filter(r => r.status === 'Submitted' || r.status === 'InReview').length : 0;
+        const activeDocuments = Array.isArray(docRes.data) ? docRes.data.length : 0;
+        const recentAnnouncements = Array.isArray(annRes.data) ? annRes.data.length : 0;
+        
+        setData({ activeDocuments, pendingRequests, recentAnnouncements, totalEmployees });
+      })
+      .catch(() => setData({ activeDocuments: 0, pendingRequests: 0, recentAnnouncements: 0, totalEmployees: 0 }))
       .finally(() => setLoading(false));
   }, []);
 
@@ -28,15 +44,15 @@ export default function Dashboard() {
   }
 
   const summaryCards = [
-    { label: 'Total Empleados', value: data?.totalEmployees ?? 0, icon: <PeopleIcon sx={{ fontSize: 40 }} />, color: '#2e7d32' },
-    { label: 'Solicitudes Pendientes', value: data?.pendingRequests ?? 0, icon: <AssignmentIcon sx={{ fontSize: 40 }} />, color: '#ed6c02' },
-    { label: 'Documentos Activos', value: data?.activeDocuments ?? 0, icon: <DescriptionIcon sx={{ fontSize: 40 }} />, color: '#1565c0' },
-    { label: 'Comunicados Recientes', value: data?.recentAnnouncements ?? 0, icon: <CampaignIcon sx={{ fontSize: 40 }} />, color: '#9c27b0' },
+    { color: '#2e7d32', icon: <PeopleIcon sx={{ fontSize: 28 }} />, label: 'Total Empleados', value: data?.totalEmployees ?? 0 },
+    { color: '#ed6c02', icon: <AssignmentIcon sx={{ fontSize: 28 }} />, label: 'Solicitudes Activas', value: data?.pendingRequests ?? 0 },
+    { color: '#1565c0', icon: <DescriptionIcon sx={{ fontSize: 28 }} />, label: 'Documentos Activos', value: data?.activeDocuments ?? 0 },
+    { color: '#9c27b0', icon: <CampaignIcon sx={{ fontSize: 28 }} />, label: 'Comunicados Recientes', value: data?.recentAnnouncements ?? 0 },
   ];
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" fontWeight={700} gutterBottom>
         Bienvenido, {keycloak?.tokenParsed?.given_name || keycloak?.tokenParsed?.preferred_username || 'Usuario'}
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -44,39 +60,54 @@ export default function Dashboard() {
       </Typography>
       <Grid container spacing={3}>
         {summaryCards.map((card) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={card.label}>
-            <Card sx={{ borderTop: `4px solid ${card.color}` }}>
+          <Grid size={{ md: 3, sm: 6, xs: 12 }} key={card.label}>
+            <Card sx={{
+              borderLeft: `3px solid ${card.color}`,
+              height: '100%',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              '&:hover': { transform: 'translateY(-2px)' },
+            }}>
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ alignItems: 'center', display: 'flex', gap: 2 }}>
+                  <Box sx={{
+                    alignItems: 'center',
+                    bgcolor: alpha(card.color, 0.12),
+                    borderRadius: 2,
+                    color: card.color,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    p: 1.5,
+                  }}>
+                    {card.icon}
+                  </Box>
                   <Box>
-                    <Typography variant="h3" fontWeight="bold">{card.value}</Typography>
+                    <Typography variant="h4" fontWeight={700}>{card.value}</Typography>
                     <Typography variant="body2" color="text.secondary">{card.label}</Typography>
                   </Box>
-                  <Box sx={{ color: card.color, opacity: 0.7 }}>{card.icon}</Box>
                 </Box>
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
-      <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>Acciones Rápidas</Typography>
+      <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>Acciones Rápidas</Typography>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 6, sm: 3 }}>
+        <Grid size={{ sm: 3, xs: 6 }}>
           <Button variant="contained" fullWidth sx={{ py: 2 }} onClick={() => navigate('/employees')}>
             Gestionar Empleados
           </Button>
         </Grid>
-        <Grid size={{ xs: 6, sm: 3 }}>
+        <Grid size={{ sm: 3, xs: 6 }}>
           <Button variant="contained" color="secondary" fullWidth sx={{ py: 2 }} onClick={() => navigate('/documents')}>
             Revisar Documentos
           </Button>
         </Grid>
-        <Grid size={{ xs: 6, sm: 3 }}>
+        <Grid size={{ sm: 3, xs: 6 }}>
           <Button variant="contained" color="warning" fullWidth sx={{ py: 2 }} onClick={() => navigate('/requests')}>
             Solicitudes
           </Button>
         </Grid>
-        <Grid size={{ xs: 6, sm: 3 }}>
+        <Grid size={{ sm: 3, xs: 6 }}>
           <Button variant="contained" color="secondary" fullWidth sx={{ py: 2 }} onClick={() => navigate('/announcements')}>
             Nuevo Comunicado
           </Button>

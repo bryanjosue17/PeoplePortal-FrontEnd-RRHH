@@ -1,37 +1,36 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Box, Typography, TextField, Button, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle,
-  DialogContent, DialogActions, Chip, CircularProgress, MenuItem, Grid
-} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { toast } from 'react-toastify';
+import SearchIcon from '@mui/icons-material/Search';
+import {
+  Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
+  DialogTitle, Grid, InputAdornment, MenuItem, Paper, Table, TableBody,
+  TableCell, TableContainer, TableHead, TableRow, TextField, Typography
+} from '@mui/material';
 import { useFormik } from 'formik';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
-import { getAllEmployees, createEmployee } from '../../api/employees';
+import { createEmployee, getAllEmployees } from '../../api/employees';
 
 const contractTypes = ['Indefinido', 'Temporal', 'Prácticas', 'Freelance'];
 
 const validationSchema = yup.object({
   code: yup.string().required('Requerido'),
-  fullName: yup.string().required('Requerido'),
-  email: yup.string().email('Email inválido').required('Requerido'),
-  keycloakId: yup.string(),
-  phone: yup.string(),
-  department: yup.string(),
-  position: yup.string(),
-  hireDate: yup.string(),
   contractType: yup.string(),
+  department: yup.string(),
+  email: yup.string().email('Email inválido').required('Requerido'),
   emergencyContact: yup.string(),
-  site: yup.string(),
+  fullName: yup.string().required('Requerido'),
+  hireDate: yup.string(),
+  keycloakId: yup.string(),
   managerId: yup.string(),
+  phone: yup.string(),
+  position: yup.string(),
+  site: yup.string(),
 });
 
 const initialForm = {
-  keycloakId: '', code: '', fullName: '', email: '', phone: '',
-  department: '', position: '', hireDate: '', contractType: '',
-  emergencyContact: '', site: '', managerId: '',
+  code: '', contractType: '', department: '', email: '', emergencyContact: '', fullName: '', hireDate: '', keycloakId: '', managerId: '', phone: '', position: '', site: '',
 };
 
 export default function Employees() {
@@ -43,7 +42,6 @@ export default function Employees() {
 
   const formik = useFormik({
     initialValues: initialForm,
-    validationSchema,
     onSubmit: async (values) => {
       try {
         await createEmployee(values);
@@ -55,6 +53,7 @@ export default function Employees() {
         toast.error('Error al crear empleado');
       }
     },
+    validationSchema,
   });
 
   const load = useCallback(() => {
@@ -80,16 +79,19 @@ export default function Employees() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1, sm: 0 } }}>
-        <Typography variant="h4">Empleados</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { xs: '100%', sm: 'auto' } }}>
+      <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
+        <Typography variant="h4" fontWeight={700}>Empleados</Typography>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
           Añadir Empleado
         </Button>
       </Box>
-      <TextField
-        fullWidth variant="outlined" placeholder="Buscar por nombre, departamento o email..."
-        value={search} onChange={(e) => setSearch(e.target.value)} sx={{ mb: 2 }}
-      />
+      <Paper sx={{ mb: 2, p: 2 }}>
+        <TextField
+          fullWidth variant="outlined" placeholder="Buscar por nombre, departamento o email..."
+          value={search} onChange={(e) => setSearch(e.target.value)} size="small"
+          slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.disabled' }} /></InputAdornment> } }}
+        />
+      </Paper>
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
@@ -97,12 +99,12 @@ export default function Employees() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Código</TableCell>
-                <TableCell>Nombre Completo</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Departamento</TableCell>
-                <TableCell>Cargo</TableCell>
-                <TableCell>Estado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Código</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Nombre Completo</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Departamento</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Cargo</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -137,50 +139,50 @@ export default function Employees() {
                   error={formik.touched.keycloakId && Boolean(formik.errors.keycloakId)}
                   helperText={formik.touched.keycloakId && formik.errors.keycloakId} />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Código" name="code" value={formik.values.code}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.code && Boolean(formik.errors.code)}
                   helperText={formik.touched.code && formik.errors.code} required />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Nombre Completo" name="fullName" value={formik.values.fullName}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.fullName && Boolean(formik.errors.fullName)}
                   helperText={formik.touched.fullName && formik.errors.fullName} required />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Email" name="email" value={formik.values.email}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.email && Boolean(formik.errors.email)}
                   helperText={formik.touched.email && formik.errors.email} required />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Teléfono" name="phone" value={formik.values.phone}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.phone && Boolean(formik.errors.phone)}
                   helperText={formik.touched.phone && formik.errors.phone} />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Departamento" name="department" value={formik.values.department}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.department && Boolean(formik.errors.department)}
                   helperText={formik.touched.department && formik.errors.department} />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Cargo" name="position" value={formik.values.position}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.position && Boolean(formik.errors.position)}
                   helperText={formik.touched.position && formik.errors.position} />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Fecha de Contratación" name="hireDate" type="date" value={formik.values.hireDate}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.hireDate && Boolean(formik.errors.hireDate)}
                   helperText={formik.touched.hireDate && formik.errors.hireDate}
                   slotProps={{ inputLabel: { shrink: true } }} />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Tipo de Contrato" name="contractType" value={formik.values.contractType}
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select
                   error={formik.touched.contractType && Boolean(formik.errors.contractType)}
@@ -188,13 +190,13 @@ export default function Employees() {
                   {contractTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                 </TextField>
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Contacto de Emergencia" name="emergencyContact" value={formik.values.emergencyContact}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.emergencyContact && Boolean(formik.errors.emergencyContact)}
                   helperText={formik.touched.emergencyContact && formik.errors.emergencyContact} />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Sitio" name="site" value={formik.values.site}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
                   error={formik.touched.site && Boolean(formik.errors.site)}
@@ -208,7 +210,7 @@ export default function Employees() {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
+          <DialogActions sx={{ justifyContent: 'flex-start', pb: 2, px: 3 }}>
             <Button onClick={handleClose}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
               {formik.isSubmitting ? 'Guardando...' : 'Guardar'}

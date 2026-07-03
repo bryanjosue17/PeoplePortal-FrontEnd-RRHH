@@ -1,14 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
 import {
-  Box, Typography, TextField, Button, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle,
-  DialogContent, DialogActions, Chip, CircularProgress, MenuItem, Grid, Stack
+  Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
+  DialogTitle, Grid, MenuItem, Paper, Stack, Table,
+  TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography
 } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getAllRequests, updateRequestStatus } from '../../api/hrRequests';
 import { getAllEmployees } from '../../api/employees';
+import { getAllRequests, updateRequestStatus } from '../../api/hrRequests';
 
-const statusColors = { Pending: 'warning', Approved: 'success', Rejected: 'error' };
+const statusColors = { Approved: 'success', Cancelled: 'default', InReview: 'warning', Rejected: 'error', Submitted: 'info' };
+const statusLabels = { Approved: 'Aprobado', Cancelled: 'Cancelado', InReview: 'En Revisión', Rejected: 'Rechazado', Submitted: 'Enviado' };
+const typeLabels = { Certificate: 'Certificado', DataUpdate: 'Actualización de Datos', Other: 'Otro', Permission: 'Permiso', Vacation: 'Vacaciones', Voucher: 'Adelanto de Sueldo' };
 
 export default function Requests() {
   const [requests, setRequests] = useState([]);
@@ -58,25 +60,29 @@ export default function Requests() {
   };
 
   const getEmployeeName = (empId) => {
-    const emp = employees.find((e) => e.id === empId);
+    const emp = employees.find((e) => e.id === empId || e.keycloakId === empId);
     return emp?.fullName || empId;
   };
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 3 }}>Solicitudes</Typography>
-      <Box sx={{ display: 'flex', gap: 2, mb: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
-        <TextField select label="Tipo" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} sx={{ minWidth: { xs: '100%', sm: 150 } }}>
-          <MenuItem value="">Todos</MenuItem>
-          {types.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
-        </TextField>
-        <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { xs: '100%', sm: 150 } }}>
-          <MenuItem value="">Todos</MenuItem>
-          <MenuItem value="Pending">Pendiente</MenuItem>
-          <MenuItem value="Approved">Aprobado</MenuItem>
-          <MenuItem value="Rejected">Rechazado</MenuItem>
-        </TextField>
-      </Box>
+      <Typography variant="h4" fontWeight={700} sx={{ mb: 3 }}>Solicitudes</Typography>
+      <Paper sx={{ mb: 2, p: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2 }}>
+          <TextField select label="Tipo" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} sx={{ minWidth: { sm: 160, xs: '100%' } }} size="small">
+            <MenuItem value="">Todos los tipos</MenuItem>
+            {types.map((t) => <MenuItem key={t} value={t}>{typeLabels[t] ?? t}</MenuItem>)}
+          </TextField>
+          <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { sm: 160, xs: '100%' } }} size="small">
+            <MenuItem value="">Todos los estados</MenuItem>
+            <MenuItem value="Submitted">Enviado</MenuItem>
+            <MenuItem value="InReview">En Revisión</MenuItem>
+            <MenuItem value="Approved">Aprobado</MenuItem>
+            <MenuItem value="Rejected">Rechazado</MenuItem>
+            <MenuItem value="Cancelled">Cancelado</MenuItem>
+          </TextField>
+        </Box>
+      </Paper>
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
@@ -84,25 +90,25 @@ export default function Requests() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Empleado</TableCell>
-                <TableCell>Tipo</TableCell>
-                <TableCell>Estado</TableCell>
-                <TableCell>Creado</TableCell>
-                <TableCell>Acciones</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Empleado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Creado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filtered.map((req) => (
                 <TableRow key={req.id} hover sx={{ cursor: 'pointer' }} onClick={() => handleDetail(req)}>
                   <TableCell>{getEmployeeName(req.employeeId)}</TableCell>
-                  <TableCell>{req.type}</TableCell>
+                  <TableCell>{typeLabels[req.type] ?? req.type}</TableCell>
                   <TableCell>
-                    <Chip label={req.status} size="small" color={statusColors[req.status] || 'default'} />
+                    <Chip label={statusLabels[req.status] ?? req.status} size="small" color={statusColors[req.status] || 'default'} />
                   </TableCell>
-                  <TableCell>{req.createdAt ? new Date(req.createdAt).toLocaleDateString() : '-'}</TableCell>
+                  <TableCell>{req.createdAtUtc ? new Date(req.createdAtUtc).toLocaleDateString('es-GT') : '-'}</TableCell>
                   <TableCell>
-                    {req.status === 'Pending' && (
-                      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={0.5} onClick={(e) => e.stopPropagation()}>
+                    {(req.status === 'Submitted' || req.status === 'InReview') && (
+                      <Stack direction={{ sm: 'row', xs: 'column' }} spacing={0.5} onClick={(e) => e.stopPropagation()}>
                         <Button size="small" color="success" variant="outlined" onClick={() => handleStatusChange(req.id, 'Approved')}>Aprobar</Button>
                         <Button size="small" color="error" variant="outlined" onClick={() => handleStatusChange(req.id, 'Rejected')}>Rechazar</Button>
                       </Stack>
@@ -124,20 +130,20 @@ export default function Requests() {
           {selectedRequest && (
             <Grid container spacing={2} sx={{ mt: 1 }}>
               <Grid size={6}><Typography variant="caption" color="text.secondary">Empleado</Typography><Typography>{getEmployeeName(selectedRequest.employeeId)}</Typography></Grid>
-              <Grid size={6}><Typography variant="caption" color="text.secondary">Tipo</Typography><Typography>{selectedRequest.type}</Typography></Grid>
+              <Grid size={6}><Typography variant="caption" color="text.secondary">Tipo</Typography><Typography>{typeLabels[selectedRequest.type] ?? selectedRequest.type}</Typography></Grid>
               <Grid size={6}>
                 <Typography variant="caption" color="text.secondary">Estado</Typography>
-                <Typography><Chip label={selectedRequest.status} size="small" color={statusColors[selectedRequest.status] || 'default'} /></Typography>
+                <Typography><Chip label={statusLabels[selectedRequest.status] ?? selectedRequest.status} size="small" color={statusColors[selectedRequest.status] || 'default'} /></Typography>
               </Grid>
-              <Grid size={6}><Typography variant="caption" color="text.secondary">Creado</Typography><Typography>{selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleDateString() : '-'}</Typography></Grid>
+              <Grid size={6}><Typography variant="caption" color="text.secondary">Creado</Typography><Typography>{selectedRequest.createdAtUtc ? new Date(selectedRequest.createdAtUtc).toLocaleDateString('es-GT') : '-'}</Typography></Grid>
               {selectedRequest.description && (
                 <Grid size={12}><Typography variant="caption" color="text.secondary">Descripción</Typography><Typography>{selectedRequest.description}</Typography></Grid>
               )}
             </Grid>
           )}
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
-          {selectedRequest?.status === 'Pending' && (
+        <DialogActions sx={{ justifyContent: 'flex-start', pb: 2, px: 3 }}>
+          {(selectedRequest?.status === 'Submitted' || selectedRequest?.status === 'InReview') && (
             <>
               <Button color="error" variant="contained" onClick={() => handleStatusChange(selectedRequest.id, 'Rejected')}>Rechazar</Button>
               <Button color="success" variant="contained" onClick={() => handleStatusChange(selectedRequest.id, 'Approved')}>Aprobar</Button>

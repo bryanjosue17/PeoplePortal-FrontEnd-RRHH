@@ -1,21 +1,21 @@
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import keycloak from './keycloak';
-import theme from './theme/theme';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
-import Dashboard from './pages/Dashboard/Dashboard';
-import Employees from './pages/Employees/Employees';
-import EmployeeDetail from './pages/EmployeeDetail/EmployeeDetail';
-import Documents from './pages/Documents/Documents';
-import Requests from './pages/Requests/Requests';
+import { CustomThemeProvider } from './context/ThemeContext';
+import keycloak from './keycloak';
+import AccessDenied from './pages/AccessDenied/AccessDenied';
 import Announcements from './pages/Announcements/Announcements';
 import Benefits from './pages/Benefits/Benefits';
+import Dashboard from './pages/Dashboard/Dashboard';
+import Documents from './pages/Documents/Documents';
+import EmployeeDetail from './pages/EmployeeDetail/EmployeeDetail';
+import Employees from './pages/Employees/Employees';
 import Reports from './pages/Reports/Reports';
-import AccessDenied from './pages/AccessDenied/AccessDenied';
+import Requests from './pages/Requests/Requests';
 
-const eventLogger = (event) => {
+const eventLogger = (event, error) => {
   if (event === 'onAuthSuccess') {
     sessionStorage.setItem('keycloak-token', keycloak.token);
   }
@@ -24,7 +24,7 @@ const eventLogger = (event) => {
 function App() {
   return (
     <ReactKeycloakProvider authClient={keycloak} onEvent={eventLogger} initOptions={{ onLoad: 'login-required', pkceMethod: 'S256' }}>
-      <ThemeProvider theme={theme}>
+      <CustomThemeProvider>
         <CssBaseline />
         <BrowserRouter>
           <ProtectedRoute>
@@ -44,7 +44,7 @@ function App() {
             </Layout>
           </ProtectedRoute>
         </BrowserRouter>
-      </ThemeProvider>
+      </CustomThemeProvider>
     </ReactKeycloakProvider>
   );
 }

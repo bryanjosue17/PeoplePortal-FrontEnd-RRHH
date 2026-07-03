@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react';
-import {
-  Box, Typography, Button, Card, CardContent, CardActions, Grid,
-  Dialog, DialogTitle, DialogContent, DialogActions, TextField,
-  Chip, CircularProgress, MenuItem
-} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { toast } from 'react-toastify';
+import {
+  Box, Button, Card, CardActions, CardContent, Chip, CircularProgress,
+  Dialog, DialogActions, DialogContent, DialogTitle, Grid,
+  MenuItem, TextField, Typography
+} from '@mui/material';
 import { useFormik } from 'formik';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import * as yup from 'yup';
-import { getActiveAnnouncements, createAnnouncement } from '../../api/announcements';
+import { createAnnouncement, getActiveAnnouncements } from '../../api/announcements';
 
 const announcementTypes = ['General', 'HR', 'IT', 'Payroll', 'Event'];
 
 const validationSchema = yup.object({
-  title: yup.string().required('Requerido'),
   body: yup.string().required('Requerido'),
-  type: yup.string(),
   expiresAt: yup.string(),
+  title: yup.string().required('Requerido'),
+  type: yup.string(),
 });
 
 export default function Announcements() {
@@ -25,8 +25,7 @@ export default function Announcements() {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const formik = useFormik({
-    initialValues: { title: '', body: '', type: 'General', expiresAt: '' },
-    validationSchema,
+    initialValues: { body: '', expiresAt: '', title: '', type: 'General' },
     onSubmit: async (values) => {
       try {
         await createAnnouncement(values);
@@ -38,6 +37,7 @@ export default function Announcements() {
         toast.error('Error al crear comunicado');
       }
     },
+    validationSchema,
   });
 
   const load = () => {
@@ -55,7 +55,7 @@ export default function Announcements() {
       await createAnnouncement({ id });
       load();
     } catch {
-      // error
+      // Error
     }
   };
 
@@ -66,9 +66,9 @@ export default function Announcements() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1, sm: 0 } }}>
-        <Typography variant="h4">Comunicados</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { xs: '100%', sm: 'auto' } }}>
+      <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
+        <Typography variant="h4" fontWeight={700}>Comunicados</Typography>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
           Nuevo Comunicado
         </Button>
       </Box>
@@ -82,17 +82,21 @@ export default function Announcements() {
             </Grid>
           )}
           {announcements.map((ann) => (
-            <Grid size={{ xs: 12, md: 6 }} key={ann.id}>
-              <Card>
+            <Grid size={{ md: 6, xs: 12 }} key={ann.id}>
+              <Card sx={{
+                borderTop: `3px solid ${ann.type === 'Urgente' ? '#f44336' : ann.type === 'HR' ? '#34D399' : '#60A5FA'}`,
+                transition: 'transform 0.2s ease',
+                '&:hover': { transform: 'translateY(-2px)' },
+              }}>
                 <CardContent>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="h6">{ann.title}</Typography>
                     <Chip label={ann.type} size="small" color="primary" variant="outlined" />
                   </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'pre-wrap', mb: 1 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1, whiteSpace: 'pre-wrap' }}>
                     {ann.body}
                   </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
                     <Chip label={ann.status || 'Active'} size="small" color="success" />
                     {ann.expiresAt && (
                       <Typography variant="caption" color="text.secondary">
@@ -142,7 +146,7 @@ export default function Announcements() {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ justifyContent: 'flex-start', px: 3, pb: 2 }}>
+          <DialogActions sx={{ justifyContent: 'flex-start', pb: 2, px: 3 }}>
             <Button onClick={handleClose}>Cancelar</Button>
             <Button type="submit" variant="contained" disabled={formik.isSubmitting}>
               {formik.isSubmitting ? 'Creando...' : 'Crear'}
