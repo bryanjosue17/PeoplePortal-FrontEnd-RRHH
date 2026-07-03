@@ -14,7 +14,8 @@ import EmployeeDetail from './pages/EmployeeDetail/EmployeeDetail';
 import Employees from './pages/Employees/Employees';
 import Reports from './pages/Reports/Reports';
 import Requests from './pages/Requests/Requests';
-import Vouchers from './pages/Vouchers/Vouchers';
+import Nomina from './pages/Nomina/Nomina';
+import UserManagement from './pages/UserManagement/UserManagement';
 
 const eventLogger = (event, error) => {
   if (event === 'onAuthSuccess') {
@@ -39,7 +40,8 @@ function App() {
                 <Route path="/requests" element={<Requests />} />
                 <Route path="/announcements" element={<Announcements />} />
                 <Route path="/benefits" element={<Benefits />} />
-                <Route path="/vouchers" element={<Vouchers />} />
+                <Route path="/nomina" element={<Nomina />} />
+                <Route path="/users" element={<UserManagement />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/access-denied" element={<AccessDenied />} />
               </Routes>

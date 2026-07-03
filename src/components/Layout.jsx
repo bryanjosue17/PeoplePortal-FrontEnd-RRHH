@@ -7,10 +7,11 @@ import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LogoutIcon from '@mui/icons-material/Logout';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import MenuIcon from '@mui/icons-material/Menu';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
 import {
   AppBar, Avatar, Badge, Box, Divider, Drawer, IconButton, List,
@@ -33,7 +34,8 @@ const menuItems = [
   { icon: <AssignmentIcon />, path: '/requests', text: 'Solicitudes' },
   { icon: <CampaignIcon />, path: '/announcements', text: 'Comunicados' },
   { icon: <CardGiftcardIcon />, path: '/benefits', text: 'Beneficios' },
-  { icon: <ReceiptLongIcon />, path: '/vouchers', text: 'Vouchers' },
+  { icon: <MonetizationOnIcon />, path: '/nomina', text: 'Nómina' },
+  { icon: <ManageAccountsIcon />, path: '/users', text: 'Usuarios' },
   { icon: <AssessmentIcon />, path: '/reports', text: 'Reportes' },
 ];
 
@@ -54,7 +56,7 @@ export default function Layout({ children }) {
       getAllRequests()
         .then(res => {
           const list = Array.isArray(res.data) ? res.data : [];
-          setPendingCount(list.filter(r => r.status === 'Submitted').length);
+          setPendingCount(list.filter(r => r.status === 'Submitted' || r.status === 'InReview').length);
         })
         .catch(() => {});
     };
