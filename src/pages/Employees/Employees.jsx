@@ -3,7 +3,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import {
   Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
   DialogTitle, Grid, InputAdornment, MenuItem, Paper, Table, TableBody,
-  TableCell, TableContainer, TableHead, TableRow, TextField, Typography
+  TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField, Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
 import { useCallback, useEffect, useState } from 'react';
@@ -36,9 +36,11 @@ const initialForm = {
 export default function Employees() {
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [loading, setLoading]     = useState(true);
+  const [search, setSearch]       = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [page, setPage]           = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const formik = useFormik({
     initialValues: initialForm,
@@ -71,6 +73,7 @@ export default function Employees() {
     (e.department?.toLowerCase() || '').includes(search.toLowerCase()) ||
     (e.email?.toLowerCase() || '').includes(search.toLowerCase())
   );
+  const paginated = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleClose = () => {
     setDialogOpen(false);
@@ -80,7 +83,10 @@ export default function Employees() {
   return (
     <Box>
       <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4" fontWeight={700}>Empleados</Typography>
+        <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+          <PeopleIcon color="primary" />
+          <Typography variant="h4" fontWeight={700}>Empleados</Typography>
+        </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
           Añadir Empleado
         </Button>
@@ -95,6 +101,7 @@ export default function Employees() {
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
+        <>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -108,7 +115,7 @@ export default function Employees() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filtered.map((emp) => (
+              {paginated.map((emp) => (
                 <TableRow key={emp.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/employees/${emp.id}`)}>
                   <TableCell>{emp.code}</TableCell>
                   <TableCell>{emp.fullName}</TableCell>
@@ -126,7 +133,16 @@ export default function Employees() {
             </TableBody>
           </Table>
         </TableContainer>
-      )}
+        <TablePagination
+          component="div"
+          count={filtered.length}
+          page={page}
+          onPageChange={(_, p) => setPage(p)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={e => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+          rowsPerPageOptions={[10, 25, 50]}
+          labelRowsPerPage="Por página:"
+        />        </>      )}
 
       <Dialog open={dialogOpen} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>Añadir Empleado</DialogTitle>

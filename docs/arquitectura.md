@@ -5,12 +5,13 @@
 | Ruta | Componente | Descripción |
 |---|---|---|
 | `/dashboard` | `Dashboard.jsx` | KPIs: empleados activos, solicitudes pendientes, documentos, comunicados |
-| `/employees` | `Employees.jsx` | Listado de empleados con búsqueda y creación |
-| `/employees/:id` | `EmployeeDetail.jsx` | Detalle completo del empleado (perfil, edición) |
-| `/documents` | `Documents.jsx` | Gestión de documentos de todos los colaboradores |
-| `/requests` | `Requests.jsx` | Solicitudes con filtros, aprobación y rechazo |
-| `/announcements` | `Announcements.jsx` | Publicar y administrar comunicados internos |
+| `/employees` | `Employees.jsx` | Listado paginado con búsqueda y creación de empleados |
+| `/employees/:id` | `EmployeeDetail.jsx` | Detalle completo del empleado (perfil, documentos, solicitudes) |
+| `/documents` | `Documents.jsx` | Gestión de documentos de todos los colaboradores (paginado, filtros) |
+| `/requests` | `Requests.jsx` | Solicitudes con filtros, aprobación, rechazo y comentario RRHH |
+| `/announcements` | `Announcements.jsx` | Publicar, visualizar y desactivar comunicados internos |
 | `/benefits` | `Benefits.jsx` | Catálogo CRUD: crear, editar y desactivar beneficios |
+| `/vouchers` | `Vouchers.jsx` | Gestión de vouchers de pago: crear, subir archivos (nómina) |
 | `/reports` | `Reports.jsx` | Reportes dinámicos + exportación PDF |
 | `/access-denied` | `AccessDenied.jsx` | Pantalla para usuarios sin rol `hr` o `admin` |
 
@@ -23,36 +24,42 @@ PeoplePortal-FrontEnd-RRHH/
 ├── public/
 ├── src/
 │   ├── api/
-│   │   └── client.js              ← Axios + interceptor Bearer
+│   │   ├── client.js              ← Axios + interceptor Bearer
+│   │   ├── announcements.js
+│   │   ├── benefits.js
+│   │   ├── employees.js
+│   │   ├── hrDocuments.js
+│   │   ├── hrRequests.js
+│   │   ├── hrVouchers.js          ← Gestión de vouchers (nómina)
+│   │   └── reports.js
 │   ├── components/
-│   │   ├── Layout.jsx             ← Sidebar + header con usuario y logout
+│   │   ├── Layout.jsx             ← Sidebar + header + campana de notificaciones pendientes
 │   │   └── ProtectedRoute.jsx     ← Guard por rol (hr / admin)
+│   ├── context/
+│   │   └── ThemeContext.jsx       ← Tema claro/oscuro/sistema
 │   ├── pages/
-│   │   ├── Dashboard.jsx
-│   │   ├── Employees.jsx
-│   │   ├── EmployeeDetail.jsx
-│   │   ├── Documents.jsx
-│   │   ├── Requests.jsx
-│   │   ├── Announcements.jsx
-│   │   ├── Benefits.jsx
-│   │   ├── Reports.jsx
-│   │   └── AccessDenied.jsx
+│   │   ├── Announcements/
+│   │   ├── Benefits/
+│   │   ├── Dashboard/
+│   │   ├── Documents/
+│   │   ├── EmployeeDetail/
+│   │   ├── Employees/
+│   │   ├── Reports/
+│   │   ├── Requests/
+│   │   ├── Vouchers/              ← Nueva sección de gestión de vouchers
+│   │   └── AccessDenied/
 │   ├── test/
-│   │   ├── keycloak.test.js
-│   │   ├── client.test.js
-│   │   ├── Layout.test.jsx
-│   │   └── Dashboard.test.jsx
 │   ├── theme/
-│   │   └── index.js               ← Tema MUI personalizado
+│   │   └── theme.js               ← Tema MUI v9 con dark mode Material 3
 │   ├── keycloak.js
-│   ├── App.jsx                    ← Router + ReactKeycloakProvider
+│   ├── App.jsx
 │   └── main.jsx
 ├── k8s/
 │   └── frontend-rrhh.yaml
 ├── Dockerfile
 ├── nginx.conf
 ├── vite.config.js
-└── docs/                          ← esta carpeta
+└── docs/
 ```
 
 ---
@@ -62,12 +69,13 @@ PeoplePortal-FrontEnd-RRHH/
 ```
 /                    → redirect a /dashboard
 /dashboard           → Dashboard  ┐
-/employees           → Employees  │ Todas envueltas en <ProtectedRoute>
-/employees/:id       → EmployeeDetail │ (verifica rol hr o admin)
-/documents           → Documents  │
+/employees           → Employees  │
+/employees/:id       → EmployeeDetail │ Todas envueltas en <ProtectedRoute>
+/documents           → Documents  │ (verifica rol hr o admin)
 /requests            → Requests   │
 /announcements       → Announcements │
 /benefits            → Benefits   │
+/vouchers            → Vouchers   │ (gestión nómina - visible para hr, admin, nomina)
 /reports             → Reports    ┘
 /access-denied       → AccessDenied (público, sin guard)
 ```

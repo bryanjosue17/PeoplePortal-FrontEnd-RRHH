@@ -2,6 +2,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PeopleIcon from '@mui/icons-material/People';
+import SpeedIcon from '@mui/icons-material/Speed';
 import {
   Box, Button, Card, CardContent, CircularProgress, Grid, Typography
 } from '@mui/material';
@@ -52,12 +53,17 @@ export default function Dashboard() {
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
-        Bienvenido, {keycloak?.tokenParsed?.given_name || keycloak?.tokenParsed?.preferred_username || 'Usuario'}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Panel de administración de Recursos Humanos
-      </Typography>
+      <Box sx={{ alignItems: 'center', display: 'flex', gap: 1.5, mb: 4 }}>
+        <SpeedIcon color="primary" sx={{ fontSize: 36 }} />
+        <Box>
+          <Typography variant="h4" fontWeight={700}>
+            Bienvenido, {keycloak?.tokenParsed?.given_name || keycloak?.tokenParsed?.preferred_username || 'Usuario'}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Panel de administración de Recursos Humanos
+          </Typography>
+        </Box>
+      </Box>
       <Grid container spacing={3}>
         {summaryCards.map((card) => (
           <Grid size={{ md: 3, sm: 6, xs: 12 }} key={card.label}>

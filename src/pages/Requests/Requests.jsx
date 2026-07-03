@@ -1,7 +1,8 @@
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import {
   Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
   DialogTitle, Grid, MenuItem, Paper, Stack, Table,
-  TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography
+  TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField, Typography
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -13,13 +14,16 @@ const statusLabels = { Approved: 'Aprobado', Cancelled: 'Cancelado', InReview: '
 const typeLabels = { Certificate: 'Certificado', DataUpdate: 'Actualización de Datos', Other: 'Otro', Permission: 'Permiso', Vacation: 'Vacaciones', Voucher: 'Adelanto de Sueldo' };
 
 export default function Requests() {
-  const [requests, setRequests] = useState([]);
-  const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [requests, setRequests]     = useState([]);
+  const [employees, setEmployees]   = useState([]);
+  const [loading, setLoading]       = useState(true);
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [hrComment, setHrComment]   = useState('');
+  const [page, setPage]             = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -37,22 +41,25 @@ export default function Requests() {
   const types = [...new Set(requests.map((r) => r.type).filter(Boolean))];
 
   const filtered = requests.filter((r) => {
-    const matchType = typeFilter ? r.type === typeFilter : true;
+    const matchType   = typeFilter   ? r.type   === typeFilter   : true;
     const matchStatus = statusFilter ? r.status === statusFilter : true;
     return matchType && matchStatus;
   });
+  const paginated = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleDetail = (req) => {
     setSelectedRequest(req);
+    setHrComment('');
     setDetailOpen(true);
   };
 
   const handleStatusChange = async (id, status) => {
     try {
-      await updateRequestStatus(id, { status });
+      await updateRequestStatus(id, { status, hrComment: hrComment || undefined });
       toast.success(`Solicitud ${status === 'Approved' ? 'aprobada' : 'rechazada'} exitosamente`);
       setDetailOpen(false);
       setSelectedRequest(null);
+      setHrComment('');
       load();
     } catch {
       toast.error('Error al actualizar solicitud');
@@ -66,7 +73,10 @@ export default function Requests() {
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} sx={{ mb: 3 }}>Solicitudes</Typography>
+      <Box sx={{ alignItems: 'center', display: 'flex', gap: 1, mb: 3 }}>
+        <AssignmentIcon color="primary" />
+        <Typography variant="h4" fontWeight={700}>Solicitudes</Typography>
+      </Box>
       <Paper sx={{ mb: 2, p: 2 }}>
         <Box sx={{ display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2 }}>
           <TextField select label="Tipo" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} sx={{ minWidth: { sm: 160, xs: '100%' } }} size="small">
@@ -86,6 +96,7 @@ export default function Requests() {
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
+        <>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -98,7 +109,7 @@ export default function Requests() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filtered.map((req) => (
+              {paginated.map((req) => (
                 <TableRow key={req.id} hover sx={{ cursor: 'pointer' }} onClick={() => handleDetail(req)}>
                   <TableCell>{getEmployeeName(req.employeeId)}</TableCell>
                   <TableCell>{typeLabels[req.type] ?? req.type}</TableCell>
@@ -122,7 +133,16 @@ export default function Requests() {
             </TableBody>
           </Table>
         </TableContainer>
-      )}
+        <TablePagination
+          component="div"
+          count={filtered.length}
+          page={page}
+          onPageChange={(_, p) => setPage(p)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={e => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+          rowsPerPageOptions={[10, 25, 50]}
+          labelRowsPerPage="Por página:"
+        />        </>      )}
 
       <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Detalle de Solicitud</DialogTitle>
@@ -139,6 +159,15 @@ export default function Requests() {
               {selectedRequest.description && (
                 <Grid size={12}><Typography variant="caption" color="text.secondary">Descripción</Typography><Typography>{selectedRequest.description}</Typography></Grid>
               )}
+              <Grid size={12}>
+                <TextField
+                  fullWidth multiline rows={3}
+                  label="Comentario para el colaborador (opcional)"
+                  value={hrComment}
+                  onChange={e => setHrComment(e.target.value)}
+                  placeholder="Agrega una observación o comentario..."
+                />
+              </Grid>
             </Grid>
           )}
         </DialogContent>

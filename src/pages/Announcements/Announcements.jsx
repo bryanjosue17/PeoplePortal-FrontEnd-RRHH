@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import CampaignIcon from '@mui/icons-material/Campaign';
 import {
   Box, Button, Card, CardActions, CardContent, Chip, CircularProgress,
   Dialog, DialogActions, DialogContent, DialogTitle, Grid,
@@ -8,7 +9,7 @@ import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
-import { createAnnouncement, getActiveAnnouncements } from '../../api/announcements';
+import { createAnnouncement, deactivateAnnouncement, getActiveAnnouncements } from '../../api/announcements';
 
 const announcementTypes = ['General', 'HR', 'IT', 'Payroll', 'Event'];
 
@@ -52,10 +53,11 @@ export default function Announcements() {
 
   const handleDeactivate = async (id) => {
     try {
-      await createAnnouncement({ id });
+      await deactivateAnnouncement(id);
+      toast.success('Comunicado desactivado');
       load();
     } catch {
-      // Error
+      toast.error('Error al desactivar comunicado');
     }
   };
 
@@ -67,7 +69,10 @@ export default function Announcements() {
   return (
     <Box>
       <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4" fontWeight={700}>Comunicados</Typography>
+        <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+          <CampaignIcon color="primary" />
+          <Typography variant="h4" fontWeight={700}>Comunicados</Typography>
+        </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
           Nuevo Comunicado
         </Button>
