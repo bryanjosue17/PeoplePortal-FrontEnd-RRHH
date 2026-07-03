@@ -114,7 +114,14 @@ export default function Benefits() {
         <Grid container spacing={3}>
           {benefits.map((benefit) => (
             <Grid size={{ md: 4, sm: 6, xs: 12 }} key={benefit.id}>
-              <Card variant="outlined" sx={{ display: 'flex', flexDirection: 'column', height: '100%', opacity: benefit.isActive ? 1 : 0.6 }}>
+              <Card sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+                opacity: benefit.isActive ? 1 : 0.55,
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                '&:hover': { transform: 'translateY(-2px)' },
+              }}>
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Box sx={{ alignItems: 'flex-start', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="h6" fontWeight={600} sx={{ flex: 1 }}>{benefit.name}</Typography>

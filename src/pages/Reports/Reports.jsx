@@ -220,12 +220,12 @@ export default function Reports() {
     <Box>
       <Box sx={{ alignItems: 'center', display: 'flex', gap: 1, mb: 3 }}>
         <AssessmentIcon color="primary" />
-        <Typography variant="h5" fontWeight={600}>Reportes</Typography>
+        <Typography variant="h4" fontWeight={700}>Reportes</Typography>
       </Box>
 
       <Grid container spacing={3}>
         <Grid size={{ md: 6, xs: 12 }}>
-          <Card variant="outlined">
+          <Card>
             <CardContent>
               <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">Solicitudes por Estado</Typography>
@@ -242,7 +242,7 @@ export default function Reports() {
         </Grid>
 
         <Grid size={{ md: 6, xs: 12 }}>
-          <Card variant="outlined">
+          <Card>
             <CardContent>
               <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">Solicitudes por Tipo</Typography>
@@ -259,7 +259,7 @@ export default function Reports() {
         </Grid>
 
         <Grid size={{ md: 6, xs: 12 }}>
-          <Card variant="outlined">
+          <Card>
             <CardContent>
               <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">Solicitudes en el Tiempo</Typography>
@@ -276,7 +276,7 @@ export default function Reports() {
         </Grid>
 
         <Grid size={{ md: 6, xs: 12 }}>
-          <Card variant="outlined">
+          <Card>
             <CardContent>
               <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">Empleados Activos</Typography>
@@ -299,7 +299,7 @@ export default function Reports() {
         </Grid>
 
         <Grid size={12}>
-          <Card variant="outlined">
+          <Card>
             <CardContent>
               <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                 <Typography variant="h6">Documentos Pendientes por Empleado</Typography>

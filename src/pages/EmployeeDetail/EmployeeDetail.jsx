@@ -94,14 +94,33 @@ export default function EmployeeDetail() {
 
   return (
     <Box>
-      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/employees')} sx={{ mb: 2 }}>
+      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/employees')} sx={{ mb: 2 }} variant="text">
         Volver a Empleados
       </Button>
 
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 2 }}>
-            <Typography variant="h5">Información del Empleado</Typography>
+          <Box sx={{ alignItems: { sm: 'center', xs: 'flex-start' }, display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2, mb: 3 }}>
+            <Box sx={{
+              alignItems: 'center',
+              background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
+              borderRadius: '50%',
+              color: '#022C22',
+              display: 'flex',
+              flexShrink: 0,
+              fontSize: 28,
+              fontWeight: 700,
+              height: 64,
+              justifyContent: 'center',
+              width: 64,
+              boxShadow: '0 4px 16px rgba(52,211,153,0.3)',
+            }}>
+              {(employee.fullName?.charAt(0) || '?').toUpperCase()}
+            </Box>
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography variant="h5" fontWeight={700}>{employee.fullName}</Typography>
+              <Typography variant="body2" color="text.secondary">{employee.position} {employee.department ? `• ${employee.department}` : ''}</Typography>
+            </Box>
             <Button variant="outlined" startIcon={<EditIcon />} onClick={() => { setEditOpen(true); formik.setValues({ contractType: employee.contractType || '', department: employee.department || '', position: employee.position || '', status: employee.status || 'Active' }); }} sx={{ width: { sm: 'auto', xs: '100%' } }}>
               Editar
             </Button>
@@ -117,11 +136,16 @@ export default function EmployeeDetail() {
         </CardContent>
       </Card>
 
-      <Typography variant="h6" sx={{ mb: 1 }}>Documentos</Typography>
+      <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>Documentos</Typography>
       <TableContainer component={Paper} sx={{ mb: 3, overflowX: 'auto' }}>
         <Table size="small">
           <TableHead>
-            <TableRow><TableCell>Nombre</TableCell><TableCell>Tipo</TableCell><TableCell>Estado</TableCell><TableCell>Subido</TableCell></TableRow>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600 }}>Nombre</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Subido</TableCell>
+            </TableRow>
           </TableHead>
           <TableBody>
             {documents.length === 0 ? (
@@ -138,11 +162,15 @@ export default function EmployeeDetail() {
         </Table>
       </TableContainer>
 
-      <Typography variant="h6" sx={{ mb: 1 }}>Solicitudes</Typography>
+      <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>Solicitudes</Typography>
       <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
         <Table size="small">
           <TableHead>
-            <TableRow><TableCell>Tipo</TableCell><TableCell>Estado</TableCell><TableCell>Creado</TableCell></TableRow>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Creado</TableCell>
+            </TableRow>
           </TableHead>
           <TableBody>
             {requests.length === 0 ? (

@@ -66,21 +66,23 @@ export default function Requests() {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 3 }}>Solicitudes</Typography>
-      <Box sx={{ display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2, mb: 2 }}>
-        <TextField select label="Tipo" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} sx={{ minWidth: { sm: 150, xs: '100%' } }}>
-          <MenuItem value="">Todos</MenuItem>
-          {types.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
-        </TextField>
-        <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { sm: 150, xs: '100%' } }}>
-          <MenuItem value="">Todos</MenuItem>
-          <MenuItem value="Submitted">Enviado</MenuItem>
-          <MenuItem value="InReview">En Revisión</MenuItem>
-          <MenuItem value="Approved">Aprobado</MenuItem>
-          <MenuItem value="Rejected">Rechazado</MenuItem>
-          <MenuItem value="Cancelled">Cancelado</MenuItem>
-        </TextField>
-      </Box>
+      <Typography variant="h4" fontWeight={700} sx={{ mb: 3 }}>Solicitudes</Typography>
+      <Paper sx={{ mb: 2, p: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2 }}>
+          <TextField select label="Tipo" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} sx={{ minWidth: { sm: 160, xs: '100%' } }} size="small">
+            <MenuItem value="">Todos los tipos</MenuItem>
+            {types.map((t) => <MenuItem key={t} value={t}>{typeLabels[t] ?? t}</MenuItem>)}
+          </TextField>
+          <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { sm: 160, xs: '100%' } }} size="small">
+            <MenuItem value="">Todos los estados</MenuItem>
+            <MenuItem value="Submitted">Enviado</MenuItem>
+            <MenuItem value="InReview">En Revisión</MenuItem>
+            <MenuItem value="Approved">Aprobado</MenuItem>
+            <MenuItem value="Rejected">Rechazado</MenuItem>
+            <MenuItem value="Cancelled">Cancelado</MenuItem>
+          </TextField>
+        </Box>
+      </Paper>
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
@@ -88,11 +90,11 @@ export default function Requests() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Empleado</TableCell>
-                <TableCell>Tipo</TableCell>
-                <TableCell>Estado</TableCell>
-                <TableCell>Creado</TableCell>
-                <TableCell>Acciones</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Empleado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Creado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

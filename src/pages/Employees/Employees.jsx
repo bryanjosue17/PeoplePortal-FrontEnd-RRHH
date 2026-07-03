@@ -1,7 +1,8 @@
 import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
-  DialogTitle, Grid, MenuItem, Paper, Table, TableBody,
+  DialogTitle, Grid, InputAdornment, MenuItem, Paper, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, TextField, Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
@@ -79,15 +80,18 @@ export default function Employees() {
   return (
     <Box>
       <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">Empleados</Typography>
+        <Typography variant="h4" fontWeight={700}>Empleados</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
           Añadir Empleado
         </Button>
       </Box>
-      <TextField
-        fullWidth variant="outlined" placeholder="Buscar por nombre, departamento o email..."
-        value={search} onChange={(e) => setSearch(e.target.value)} sx={{ mb: 2 }}
-      />
+      <Paper sx={{ mb: 2, p: 2 }}>
+        <TextField
+          fullWidth variant="outlined" placeholder="Buscar por nombre, departamento o email..."
+          value={search} onChange={(e) => setSearch(e.target.value)} size="small"
+          slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.disabled' }} /></InputAdornment> } }}
+        />
+      </Paper>
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
@@ -95,12 +99,12 @@ export default function Employees() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Código</TableCell>
-                <TableCell>Nombre Completo</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Departamento</TableCell>
-                <TableCell>Cargo</TableCell>
-                <TableCell>Estado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Código</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Nombre Completo</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Departamento</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Cargo</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

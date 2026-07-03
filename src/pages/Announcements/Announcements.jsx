@@ -67,7 +67,7 @@ export default function Announcements() {
   return (
     <Box>
       <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">Comunicados</Typography>
+        <Typography variant="h4" fontWeight={700}>Comunicados</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
           Nuevo Comunicado
         </Button>
@@ -83,7 +83,11 @@ export default function Announcements() {
           )}
           {announcements.map((ann) => (
             <Grid size={{ md: 6, xs: 12 }} key={ann.id}>
-              <Card>
+              <Card sx={{
+                borderTop: `3px solid ${ann.type === 'Urgente' ? '#f44336' : ann.type === 'HR' ? '#34D399' : '#60A5FA'}`,
+                transition: 'transform 0.2s ease',
+                '&:hover': { transform: 'translateY(-2px)' },
+              }}>
                 <CardContent>
                   <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="h6">{ann.title}</Typography>

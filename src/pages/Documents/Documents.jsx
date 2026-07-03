@@ -1,7 +1,8 @@
 import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Autocomplete, Box, Button, Chip, CircularProgress, Dialog, DialogActions,
-  DialogContent, DialogTitle, Grid, MenuItem, Paper, Stack,
+  DialogContent, DialogTitle, Grid, InputAdornment, MenuItem, Paper, Stack,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
@@ -89,21 +90,25 @@ export default function Documents() {
   return (
     <Box>
       <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">Documentos</Typography>
+        <Typography variant="h4" fontWeight={700}>Documentos</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
           Subir Documento
         </Button>
       </Box>
-      <Box sx={{ display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2, mb: 2 }}>
-        <TextField fullWidth variant="outlined" placeholder="Buscar por empleado o nombre..."
-          value={search} onChange={(e) => setSearch(e.target.value)} />
-        <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { sm: 150, xs: '100%' } }}>
-          <MenuItem value="">Todos</MenuItem>
-          <MenuItem value="Pending">Pendiente</MenuItem>
-          <MenuItem value="Approved">Aprobado</MenuItem>
-          <MenuItem value="Rejected">Rechazado</MenuItem>
-        </TextField>
-      </Box>
+      <Paper sx={{ mb: 2, p: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2 }}>
+          <TextField fullWidth variant="outlined" placeholder="Buscar por empleado o nombre..."
+            value={search} onChange={(e) => setSearch(e.target.value)} size="small"
+            slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.disabled' }} /></InputAdornment> } }}
+          />
+          <TextField select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} sx={{ minWidth: { sm: 160, xs: '100%' } }} size="small">
+            <MenuItem value="">Todos los estados</MenuItem>
+            <MenuItem value="Pending">Pendiente</MenuItem>
+            <MenuItem value="Approved">Aprobado</MenuItem>
+            <MenuItem value="Rejected">Rechazado</MenuItem>
+          </TextField>
+        </Box>
+      </Paper>
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
@@ -111,8 +116,12 @@ export default function Documents() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Empleado</TableCell><TableCell>Nombre</TableCell><TableCell>Tipo</TableCell>
-                <TableCell>Estado</TableCell><TableCell>Subido</TableCell><TableCell>Acciones</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Empleado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Nombre</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Tipo</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Estado</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Subido</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -120,7 +129,7 @@ export default function Documents() {
                 const emp = employees.find((e) => e.id === doc.employeeId || e.keycloakId === doc.employeeId);
                 return (
                   <TableRow key={doc.id}>
-                    <TableCell>{emp?.fullName ?? <em style={{ color: '#999' }}>Empleado no encontrado</em>}</TableCell>
+                    <TableCell>{emp?.fullName ?? <Typography component="span" variant="body2" color="text.disabled" fontStyle="italic">Empleado no encontrado</Typography>}</TableCell>
                     <TableCell>{doc.name}</TableCell>
                     <TableCell>{doc.type}</TableCell>
                     <TableCell><Chip label={statusLabels[doc.status] ?? doc.status} size="small" color={statusColors[doc.status] || 'default'} /></TableCell>
