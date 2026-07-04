@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import PeopleIcon from '@mui/icons-material/People';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Box, Button, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
