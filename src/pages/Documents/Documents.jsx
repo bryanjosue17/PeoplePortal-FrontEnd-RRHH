@@ -1,9 +1,10 @@
 import AddIcon from '@mui/icons-material/Add';
+import DescriptionIcon from '@mui/icons-material/Description';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Autocomplete, Box, Button, Chip, CircularProgress, Dialog, DialogActions,
   DialogContent, DialogTitle, Grid, InputAdornment, MenuItem, Paper, Stack,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField, Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
 import { useCallback, useEffect, useState } from 'react';
@@ -24,13 +25,15 @@ const validationSchema = yup.object({
 });
 
 export default function Documents() {
-  const [documents, setDocuments] = useState([]);
-  const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [documents, setDocuments]     = useState([]);
+  const [employees, setEmployees]     = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [search, setSearch]           = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen]   = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [page, setPage]               = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const formik = useFormik({
     initialValues: { expiresAt: '', fileUrl: '', name: '', type: '' },
@@ -70,6 +73,7 @@ export default function Documents() {
     const matchStatus = statusFilter ? d.status === statusFilter : true;
     return matchSearch && matchStatus;
   });
+  const paginated = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleStatusChange = async (id, status) => {
     try {
@@ -90,7 +94,10 @@ export default function Documents() {
   return (
     <Box>
       <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4" fontWeight={700}>Documentos</Typography>
+        <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+          <DescriptionIcon color="primary" />
+          <Typography variant="h4" fontWeight={700}>Documentos</Typography>
+        </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
           Subir Documento
         </Button>
@@ -112,6 +119,7 @@ export default function Documents() {
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
+        <>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -125,7 +133,7 @@ export default function Documents() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filtered.map((doc) => {
+              {paginated.map((doc) => {
                 const emp = employees.find((e) => e.id === doc.employeeId || e.keycloakId === doc.employeeId);
                 return (
                   <TableRow key={doc.id}>
@@ -151,7 +159,16 @@ export default function Documents() {
             </TableBody>
           </Table>
         </TableContainer>
-      )}
+        <TablePagination
+          component="div"
+          count={filtered.length}
+          page={page}
+          onPageChange={(_, p) => setPage(p)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={e => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+          rowsPerPageOptions={[10, 25, 50]}
+          labelRowsPerPage="Por página:"
+        />        </>      )}
 
       <Dialog open={dialogOpen} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>Subir Documento</DialogTitle>

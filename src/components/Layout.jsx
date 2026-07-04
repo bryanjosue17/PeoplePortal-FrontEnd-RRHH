@@ -7,19 +7,23 @@ import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LogoutIcon from '@mui/icons-material/Logout';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import MenuIcon from '@mui/icons-material/Menu';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
 import {
-  AppBar, Avatar, Box, Divider, Drawer, IconButton, List,
+  AppBar, Avatar, Badge, Box, Divider, Drawer, IconButton, List,
   ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Typography
 } from '@mui/material';
 import { useKeycloak } from '@react-keycloak/web';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useThemeContext } from '../context/ThemeContext';
+import { getAllRequests } from '../api/hrRequests';
 
 const drawerWidth = 240;
 
@@ -30,6 +34,8 @@ const menuItems = [
   { icon: <AssignmentIcon />, path: '/requests', text: 'Solicitudes' },
   { icon: <CampaignIcon />, path: '/announcements', text: 'Comunicados' },
   { icon: <CardGiftcardIcon />, path: '/benefits', text: 'Beneficios' },
+  { icon: <MonetizationOnIcon />, path: '/nomina', text: 'Nómina' },
+  { icon: <ManageAccountsIcon />, path: '/users', text: 'Usuarios' },
   { icon: <AssessmentIcon />, path: '/reports', text: 'Reportes' },
 ];
 
@@ -39,9 +45,25 @@ export default function Layout({ children }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [pendingCount, setPendingCount] = useState(0);
+  const intervalRef = useRef(null);
 
   const { themeMode, toggleThemeMode } = useThemeContext();
   const [themeAnchorEl, setThemeAnchorEl] = useState(null);
+
+  useEffect(() => {
+    const check = () => {
+      getAllRequests()
+        .then(res => {
+          const list = Array.isArray(res.data) ? res.data : [];
+          setPendingCount(list.filter(r => r.status === 'Submitted' || r.status === 'InReview').length);
+        })
+        .catch(() => {});
+    };
+    check();
+    intervalRef.current = setInterval(check, 60_000);
+    return () => clearInterval(intervalRef.current);
+  }, []);
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
   const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
@@ -135,6 +157,16 @@ export default function Layout({ children }) {
             {menuItems.find(i => location.pathname === i.path || (i.path !== '/dashboard' && location.pathname.startsWith(i.path)))?.text || 'RRHH'}
           </Typography>
           <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+            <IconButton
+              color="inherit"
+              sx={{ color: 'text.secondary' }}
+              onClick={() => navigate('/requests')}
+              title={`${pendingCount} solicitudes pendientes`}
+            >
+              <Badge badgeContent={pendingCount > 0 ? pendingCount : null} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
             <IconButton color="inherit" onClick={handleThemeMenuOpen} sx={{ mr: 1, color: 'text.secondary' }}>
               {getThemeIcon()}
             </IconButton>

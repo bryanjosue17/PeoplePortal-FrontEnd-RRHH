@@ -28,8 +28,8 @@ Base URL: configurada por `VITE_API_URL` (vacío = misma origin).
 
 | Método | Ruta | Página | Descripción |
 |---|---|---|---|
-| `GET` | `/api/hr/requests` | Requests | Listar todas las solicitudes con filtros |
-| `PATCH` | `/api/hr/requests/:id/status` | Requests | Aprobar o rechazar solicitud |
+| `GET` | `/api/hr/requests` | Requests | Listar todas las solicitudes con filtros (tipo, estado) |
+| `PATCH` | `/api/hr/requests/:id/status` | Requests | Aprobar o rechazar solicitud (acepta campo `hrComment`) |
 
 ---
 
@@ -49,6 +49,17 @@ Base URL: configurada por `VITE_API_URL` (vacío = misma origin).
 |---|---|---|---|
 | `GET` | `/api/announcements` | Announcements | Comunicados activos |
 | `POST` | `/api/hr/announcements` | Announcements | Publicar nuevo comunicado |
+| `PATCH` | `/api/hr/announcements/:id/deactivate` | Announcements | Desactivar comunicado |
+
+---
+
+## Vouchers de Pago
+
+| Método | Ruta | Página | Descripción |
+|---|---|---|---|
+| `GET` | `/api/hr/vouchers` | Vouchers | Listar todos los vouchers de todos los empleados |
+| `POST` | `/api/hr/vouchers` | Vouchers | Crear voucher para un empleado (período + empleado) |
+| `PATCH` | `/api/hr/vouchers/:id/upload` | Vouchers | Adjuntar URL de archivo PDF/imagen al voucher |
 
 ---
 
