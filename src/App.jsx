@@ -1,5 +1,5 @@
-import { CssBaseline, ThemeProvider } from '@mui/material';
-import { ReactKeycloakProvider } from '@react-keycloak/web';
+import { CssBaseline } from '@mui/material';
+import { useKeycloak, ReactKeycloakProvider } from '@react-keycloak/web';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -28,15 +28,23 @@ const eventLogger = (event, error) => {
   }
 };
 
+// Bloquea el render de rutas hasta que keycloak.authenticated === true
+function AuthGuard({ children }) {
+  const { keycloak, initialized } = useKeycloak();
+  if (!initialized || !keycloak.authenticated) return null;
+  return children;
+}
+
 function App() {
   return (
     <ReactKeycloakProvider authClient={keycloak} onEvent={eventLogger} initOptions={{ onLoad: 'login-required', pkceMethod: 'S256', checkLoginIframe: false }}>
       <CustomThemeProvider>
         <CssBaseline />
         <BrowserRouter>
-          <ProtectedRoute>
-            <Layout>
-              <Routes>
+          <AuthGuard>
+            <ProtectedRoute>
+              <Layout>
+                <Routes>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/employees" element={<Employees />} />
@@ -52,6 +60,7 @@ function App() {
               </Routes>
             </Layout>
           </ProtectedRoute>
+          </AuthGuard>
         </BrowserRouter>
       </CustomThemeProvider>
     </ReactKeycloakProvider>
