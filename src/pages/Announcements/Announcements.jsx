@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { createAnnouncement, deactivateAnnouncement, getActiveAnnouncements } from '../../api/announcements';
 
-const announcementTypes = ['General', 'HR', 'IT', 'Payroll', 'Event'];
+const announcementTypes = ['News', 'HrNotice', 'PolicyChange', 'Event', 'Reminder', 'Birthday', 'Institutional'];
 
 const validationSchema = yup.object({
   body: yup.string().required('Requerido'),
@@ -26,7 +26,7 @@ export default function Announcements() {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const formik = useFormik({
-    initialValues: { body: '', expiresAt: '', title: '', type: 'General' },
+    initialValues: { body: '', expiresAt: '', title: '', type: 'News' },
     onSubmit: async (values) => {
       try {
         await createAnnouncement(values);
