@@ -17,11 +17,11 @@ Panel de administración de Recursos Humanos. Gestiona empleados, solicitudes, d
 ## Scripts
 
 ```bash
-
+<<<<<<< Updated upstream
 npm run dev           # Dev server (localhost:5173; usa 5174 si 5173 está ocupado)
-
+=======
 npm run dev           # Dev server → http://localhost:5174
-
+>>>>>>> Stashed changes
 npm run build         # Build producción
 npm run test          # Tests (Vitest)
 npm run test:coverage # Tests con reporte de cobertura (Codacy)
