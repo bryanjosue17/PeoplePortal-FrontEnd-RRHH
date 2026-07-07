@@ -39,9 +39,7 @@ export default function Documents() {
     initialValues: { expiresAt: '', fileUrl: '', name: '', type: '' },
     onSubmit: async (values) => {
       try {
-        const payload = { ...values, employeeId: selectedEmployee?.id || '' };
-        if (!payload.expiresAt) payload.expiresAt = null;
-        await uploadDocument(payload);
+        await uploadDocument({ ...values, employeeId: selectedEmployee?.id || '' });
         toast.success('Documento subido exitosamente');
         setDialogOpen(false);
         setSelectedEmployee(null);

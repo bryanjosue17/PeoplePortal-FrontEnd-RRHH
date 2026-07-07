@@ -13,12 +13,7 @@ import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { createEmployee, getAllEmployees } from '../../api/employees';
 
-const contractTypes = [
-  { label: 'Indefinido', value: 'Permanent' },
-  { label: 'Temporal', value: 'Temporary' },
-  { label: 'Prácticas', value: 'Intern' },
-  { label: 'Freelance', value: 'Freelance' },
-];
+const contractTypes = ['Indefinido', 'Temporal', 'Prácticas', 'Freelance'];
 
 const validationSchema = yup.object({
   code: yup.string().required('Requerido'),
@@ -52,8 +47,7 @@ export default function Employees() {
     initialValues: initialForm,
     onSubmit: async (values) => {
       try {
-        const payload = { ...values, keycloakId: values.keycloakId || crypto.randomUUID() };
-        await createEmployee(payload);
+        await createEmployee(values);
         toast.success('Empleado creado exitosamente');
         setDialogOpen(false);
         formik.resetForm();
@@ -76,7 +70,6 @@ export default function Employees() {
   useEffect(() => { load(); }, [load]);
 
   const filtered = employees.filter((e) =>
-    (e.code?.toLowerCase() || '').includes(search.toLowerCase()) ||
     (e.fullName?.toLowerCase() || '').includes(search.toLowerCase()) ||
     (e.department?.toLowerCase() || '').includes(search.toLowerCase()) ||
     (e.email?.toLowerCase() || '').includes(search.toLowerCase())
@@ -157,6 +150,12 @@ export default function Employees() {
         <Box component="form" onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={2}>
+              <Grid size={12}>
+                <TextField fullWidth label="Keycloak ID" name="keycloakId" value={formik.values.keycloakId}
+                  onChange={formik.handleChange} onBlur={formik.handleBlur}
+                  error={formik.touched.keycloakId && Boolean(formik.errors.keycloakId)}
+                  helperText={formik.touched.keycloakId && formik.errors.keycloakId} />
+              </Grid>
               <Grid size={{ sm: 6, xs: 12 }}>
                 <TextField fullWidth label="Código" name="code" value={formik.values.code}
                   onChange={formik.handleChange} onBlur={formik.handleBlur}
@@ -205,7 +204,7 @@ export default function Employees() {
                   onChange={formik.handleChange} onBlur={formik.handleBlur} select
                   error={formik.touched.contractType && Boolean(formik.errors.contractType)}
                   helperText={formik.touched.contractType && formik.errors.contractType}>
-                  {contractTypes.map((t) => <MenuItem key={t.value} value={t.value}>{t.label}</MenuItem>)}
+                  {contractTypes.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
                 </TextField>
               </Grid>
               <Grid size={{ sm: 6, xs: 12 }}>

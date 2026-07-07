@@ -1,5 +1,5 @@
-import { CssBaseline } from '@mui/material';
-import { useKeycloak, ReactKeycloakProvider } from '@react-keycloak/web';
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -18,22 +18,10 @@ import Nomina from './pages/Nomina/Nomina';
 import UserManagement from './pages/UserManagement/UserManagement';
 
 const eventLogger = (event, error) => {
-  if (event === 'onAuthSuccess' || event === 'onTokenRefreshed' || event === 'onAuthRefreshSuccess') {
-    if (keycloak.token) {
-      sessionStorage.setItem('keycloak-token', keycloak.token);
-    }
-  }
-  if (event === 'onAuthLogout' || event === 'onAuthRefreshError') {
-    sessionStorage.removeItem('keycloak-token');
+  if (event === 'onAuthSuccess') {
+    sessionStorage.setItem('keycloak-token', keycloak.token);
   }
 };
-
-// Bloquea el render de rutas hasta que keycloak.authenticated === true
-function AuthGuard({ children }) {
-  const { keycloak, initialized } = useKeycloak();
-  if (!initialized || !keycloak.authenticated) return null;
-  return children;
-}
 
 function App() {
   return (
@@ -41,10 +29,9 @@ function App() {
       <CustomThemeProvider>
         <CssBaseline />
         <BrowserRouter>
-          <AuthGuard>
-            <ProtectedRoute>
-              <Layout>
-                <Routes>
+          <ProtectedRoute>
+            <Layout>
+              <Routes>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/employees" element={<Employees />} />
@@ -60,7 +47,6 @@ function App() {
               </Routes>
             </Layout>
           </ProtectedRoute>
-          </AuthGuard>
         </BrowserRouter>
       </CustomThemeProvider>
     </ReactKeycloakProvider>
