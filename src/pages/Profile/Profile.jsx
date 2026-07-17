@@ -7,7 +7,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import SaveIcon from '@mui/icons-material/Save';
 import WorkIcon from '@mui/icons-material/Work';
 import SecurityIcon from '@mui/icons-material/Security';
-import { Alert, Box, Button, Card, Chip, Divider, Grid, Skeleton, TextField, Typography, Paper } from '@mui/material';
+import { Box, Button, Card, Chip, Divider, Grid, Skeleton, TextField, Typography, Paper } from '@mui/material';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -27,7 +27,6 @@ function Profile() {
   const { user } = useAuth(); // keycloak parsed token
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, _setError] = useState(null);
   const [editing, setEditing] = useState(false);
 
   const formik = useFormik({
@@ -81,14 +80,6 @@ function Profile() {
     });
     setEditing(false);
   };
-
-  if (error) {
-    return (
-      <Alert severity="error" sx={{ mt: 2 }}>
-        Error al cargar el perfil: {error}
-      </Alert>
-    );
-  }
 
   if (loading) {
     return (
