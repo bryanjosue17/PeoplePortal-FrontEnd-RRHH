@@ -16,6 +16,19 @@ vi.mock('@react-keycloak/web', () => ({
   }),
 }));
 
+vi.mock('../context/ThemeContext', () => ({
+  useThemeContext: () => ({
+    themeMode: 'light',
+    toggleThemeMode: vi.fn(),
+  }),
+}));
+
+vi.mock('../context/NotificationContext', () => ({
+  useNotifications: () => ({
+    unreadCount: 0,
+    clearUnread: vi.fn(),
+  }),
+}));
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
