@@ -1,11 +1,11 @@
 export class UserManagementPage {
   constructor(page) {
     this.page = page;
-    this.heading = page.getByRole('heading', { name: /Usuarios/i, level: 4 });
+    this.heading = page.locator('h1, h2, h3, h4, h5, h6, .MuiTypography-root').filter({ hasText: /Usuarios/i }).first();
   }
 
   async verifyLoaded() {
-    await this.heading.waitFor({ state: 'visible' });
+    await this.heading.waitFor({ state: 'visible', timeout: 20000 });
   }
 
   // POST /api/hr/users

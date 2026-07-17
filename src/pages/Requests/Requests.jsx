@@ -73,11 +73,46 @@ export default function Requests() {
 
   return (
     <Box>
-      <Box sx={{ alignItems: 'center', display: 'flex', gap: 1, mb: 3 }}>
-        <AssignmentIcon color="primary" />
-        <Typography variant="h4" fontWeight={700}>Solicitudes</Typography>
-      </Box>
-      <Paper sx={{ mb: 2, p: 2 }}>
+      {/* Glassmorphic Header Banner */}
+      <Paper
+        elevation={0}
+        sx={{
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(52,211,153,0.06) 100%)',
+          backdropFilter: 'blur(16px)',
+          borderRadius: 3,
+          mb: 4,
+          p: { xs: 2.5, md: 3.5 },
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderLeft: '5px solid #10B981',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, position: 'relative', zIndex: 1 }}>
+          <Box sx={{ p: 1.5, borderRadius: 2.5, background: 'linear-gradient(135deg, #10B981, #34D399)', color: '#022C22', display: 'flex', boxShadow: '0 6px 16px rgba(16,185,129,0.3)' }}>
+            <AssignmentIcon fontSize="medium" />
+          </Box>
+          <Box>
+            <Typography variant="h4" fontWeight={800}>Solicitudes y Vales</Typography>
+            <Typography variant="body2" color="text.secondary">Evaluación, resolución y seguimiento de peticiones de vacaciones y constancias de todo el personal</Typography>
+          </Box>
+        </Box>
+        <Box sx={{
+          position: 'absolute', right: -40, top: -40, width: 220, height: 220, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(255,255,255,0) 70%)', zIndex: 0
+        }} />
+      </Paper>
+
+      <Paper elevation={0} sx={{
+        mb: 3,
+        p: 2.5,
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
+      }}>
         <Box sx={{ display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2 }}>
           <TextField select label="Tipo" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} sx={{ minWidth: { sm: 160, xs: '100%' } }} size="small">
             <MenuItem value="">Todos los tipos</MenuItem>
@@ -93,11 +128,19 @@ export default function Requests() {
           </TextField>
         </Box>
       </Paper>
+
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
         <>
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} elevation={0} sx={{
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 3,
+          overflowX: 'auto',
+        }}>
           <Table>
             <TableHead>
               <TableRow>

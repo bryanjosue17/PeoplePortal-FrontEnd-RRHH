@@ -3,16 +3,14 @@ import { MemoryRouter } from 'react-router-dom';
 import { expect, it, vi } from 'vitest';
 import Layout from '../components/Layout';
 
-vi.mock('@react-keycloak/web', () => ({
-  useKeycloak: () => ({
-    keycloak: {
-      logout: vi.fn(),
-      tokenParsed: {
-        email: 'admin@test.com',
-        name: 'Admin User',
-        preferred_username: 'admin',
-      },
+vi.mock('../context/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      email: 'admin@test.com',
+      name: 'Admin User',
+      preferred_username: 'admin',
     },
+    logout: vi.fn(),
   }),
 }));
 

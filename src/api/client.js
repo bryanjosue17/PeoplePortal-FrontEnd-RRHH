@@ -13,9 +13,10 @@ apiClient.interceptors.request.use(async config => {
       await keycloak.updateToken(30);
       sessionStorage.setItem('keycloak-token', keycloak.token);
     } catch {
-      // Si no se puede refrescar, forzar re-login
-      keycloak.login();
-      return Promise.reject(new Error('Token refresh failed, redirecting to login'));
+      // Si no se puede refrescar, limpiar sesión y volver al login personalizado
+      sessionStorage.clear();
+      window.location.reload();
+      return Promise.reject(new Error('Token refresh failed'));
     }
     config.headers.Authorization = `Bearer ${keycloak.token}`;
   } else {
@@ -38,7 +39,8 @@ apiClient.interceptors.response.use(
         original.headers.Authorization = `Bearer ${keycloak.token}`;
         return apiClient(original);
       } catch {
-        keycloak.login();
+        sessionStorage.clear();
+        window.location.reload();
       }
     }
     return Promise.reject(error);

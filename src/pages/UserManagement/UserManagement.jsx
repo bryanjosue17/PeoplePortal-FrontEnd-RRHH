@@ -131,48 +131,96 @@ export default function UserManagement() {
 
   return (
     <Box>
-      {/* Header */}
-      <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Box sx={{ alignItems: 'center', display: 'flex', gap: 1.5 }}>
-          <Box sx={{ alignItems: 'center', bgcolor: alpha('#34D399', 0.12), borderRadius: 2, color: 'primary.main', display: 'flex', p: 1 }}>
-            <ManageAccountsIcon />
+      {/* Glassmorphic Header Banner */}
+      <Paper
+        elevation={0}
+        sx={{
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(52,211,153,0.06) 100%)',
+          backdropFilter: 'blur(16px)',
+          borderRadius: 3,
+          mb: 4,
+          p: { xs: 2.5, md: 3.5 },
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderLeft: '5px solid #10B981',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, position: 'relative', zIndex: 1 }}>
+          <Box sx={{ p: 1.5, borderRadius: 2.5, background: 'linear-gradient(135deg, #10B981, #34D399)', color: '#022C22', display: 'flex', boxShadow: '0 6px 16px rgba(16,185,129,0.3)' }}>
+            <ManageAccountsIcon fontSize="medium" />
           </Box>
           <Box>
-            <Typography variant="h4" fontWeight={700}>Gestión de Usuarios</Typography>
-            <Typography variant="body2" color="text.secondary">Usuarios de Keycloak vinculados a empleados</Typography>
+            <Typography variant="h4" fontWeight={800}>Gestión de Usuarios SSO</Typography>
+            <Typography variant="body2" color="text.secondary">Control centralizado de cuentas Keycloak, asignación de roles y vinculación con expedientes de empleados</Typography>
           </Box>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)}>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)} sx={{ position: 'relative', zIndex: 1, width: { xs: '100%', sm: 'auto' }, background: 'linear-gradient(135deg, #10B981, #059669)', fontWeight: 700 }}>
           Nuevo Usuario
         </Button>
-      </Box>
+        <Box sx={{
+          position: 'absolute', right: -40, top: -40, width: 220, height: 220, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(255,255,255,0) 70%)', zIndex: 0
+        }} />
+      </Paper>
 
       {/* KPI */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { label: 'Total usuarios', value: users.length, color: 'primary' },
-          { label: 'Habilitados', value: activeCount, color: 'success' },
-          { label: 'Deshabilitados', value: inactiveCount, color: 'error' },
-          { label: 'Vinculados a empleado', value: linkedCount, color: 'warning' },
+          { label: 'Total usuarios', value: users.length, color: '#3B82F6', mainColor: 'primary.main' },
+          { label: 'Habilitados', value: activeCount, color: '#10B981', mainColor: 'success.main' },
+          { label: 'Deshabilitados', value: inactiveCount, color: '#EF4444', mainColor: 'error.main' },
+          { label: 'Vinculados a empleado', value: linkedCount, color: '#F59E0B', mainColor: 'warning.main' },
         ].map(k => (
           <Grid size={{ md: 3, sm: 6, xs: 12 }} key={k.label}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="h4" fontWeight={700} color={`${k.color}.main`}>{k.value}</Typography>
-              <Typography variant="body2" color="text.secondary">{k.label}</Typography>
+            <Card sx={{
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderTop: `4px solid ${k.color}`,
+              borderRadius: 3,
+              p: 2.5,
+              transition: 'transform 0.2s',
+              '&:hover': { transform: 'translateY(-3px)' }
+            }}>
+              <Typography variant="h3" fontWeight={800} color={k.mainColor}>{k.value}</Typography>
+              <Typography variant="body2" color="text.secondary" fontWeight={500}>{k.label}</Typography>
             </Card>
           </Grid>
         ))}
       </Grid>
 
       {/* Search */}
-      <Paper sx={{ mb: 2, p: 2 }}>
+      <Paper elevation={0} sx={{
+        mb: 3,
+        p: 2.5,
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
+      }}>
         <TextField fullWidth size="small" placeholder="Buscar por usuario, email, nombre o empleado..."
           value={search} onChange={e => { setSearch(e.target.value); setPage(0); }}
-          slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'text.disabled' }} /></InputAdornment> } }} />
+          slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: 'primary.main' }} /></InputAdornment> } }} />
       </Paper>
 
       {/* Table */}
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} elevation={0} sx={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
+        overflowX: 'auto',
+      }}>
         <Table>
           <TableHead>
             <TableRow>

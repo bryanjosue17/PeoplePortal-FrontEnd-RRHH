@@ -1,4 +1,4 @@
-import AssessmentIcon from '@mui/icons-material/Assessment';
+import DiceAvatar from './DiceAvatar';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
@@ -12,12 +12,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PeopleIcon from '@mui/icons-material/People';
+import PersonIcon from '@mui/icons-material/Person';
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
 import {
-  AppBar, Avatar, Badge, Box, Divider, Drawer, IconButton, List,
+  AppBar, Badge, Box, Divider, Drawer, IconButton, List,
   ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Typography
 } from '@mui/material';
-import { useKeycloak } from '@react-keycloak/web';
+import { useAuth } from '../context/AuthContext';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -40,7 +41,7 @@ const menuItems = [
 ];
 
 export default function Layout({ children }) {
-  const { keycloak } = useKeycloak();
+  const { user: tokenParsed, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -70,8 +71,9 @@ export default function Layout({ children }) {
   const handleMenuClose = () => setAnchorEl(null);
   const handleLogout = () => {
     handleMenuClose();
-    keycloak.logout();
+    logout();
   };
+
 
   const handleThemeMenuOpen = (e) => setThemeAnchorEl(e.currentTarget);
   const handleThemeMenuClose = () => setThemeAnchorEl(null);
@@ -86,10 +88,8 @@ export default function Layout({ children }) {
     return <SettingsBrightnessIcon />;
   };
 
-  const token = keycloak?.tokenParsed;
-  const userName = token?.name || token?.preferred_username || 'Usuario';
-  const userEmail = token?.email || '';
-  const userAvatar = userName.charAt(0).toUpperCase();
+  const userName = tokenParsed?.name || tokenParsed?.preferred_username || 'Usuario';
+  const userEmail = tokenParsed?.email || '';
 
   const drawer = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -121,16 +121,38 @@ export default function Layout({ children }) {
       </Box>
       <Divider />
       <List sx={{ flexGrow: 1, pt: 1 }}>
-        {menuItems.map((item) => (
-          <ListItemButton
-            key={item.path}
-            selected={location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path))}
-            onClick={() => { navigate(item.path); setMobileOpen(false); }}
-          >
-            <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItemButton>
-        ))}
+        {menuItems.map((item) => {
+          const isSelected = location.pathname === item.path || (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
+          return (
+            <ListItemButton
+              key={item.path}
+              selected={isSelected}
+              onClick={() => { navigate(item.path); setMobileOpen(false); }}
+              sx={{
+                borderRadius: 2,
+                mx: 1.5,
+                mb: 0.5,
+                transition: 'all 0.2s',
+                '&.Mui-selected': {
+                  background: 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(14,165,233,0.15))',
+                  borderLeft: '4px solid #10B981',
+                  color: 'primary.main',
+                  fontWeight: 700,
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, rgba(16,185,129,0.25), rgba(14,165,233,0.2))',
+                  }
+                },
+                '&:hover': {
+                  background: 'rgba(16,185,129,0.08)',
+                  transform: 'translateX(3px)',
+                }
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, color: isSelected ? 'primary.main' : 'inherit' }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          );
+        })}
       </List>
     </Box>
   );
@@ -139,9 +161,18 @@ export default function Layout({ children }) {
     <Box sx={{ display: 'flex' }}>
       <AppBar
         position="fixed"
+        elevation={0}
         sx={{
           ml: { md: `${drawerWidth}px` },
           width: { md: `calc(100% - ${drawerWidth}px)` },
+          background: (theme) => theme.palette.mode === 'dark'
+            ? 'linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(30,41,59,0.75) 100%)'
+            : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.8) 100%)',
+          backdropFilter: 'blur(16px)',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          color: 'text.primary',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
         }}
       >
         <Toolbar>
@@ -192,12 +223,12 @@ export default function Layout({ children }) {
             <Typography variant="body2" sx={{ display: { sm: 'block', xs: 'none' } }}>
               {userName}
             </Typography>
-            <Avatar
+            <DiceAvatar
+              seed={userEmail || userName}
+              size={36}
+              sx={{ cursor: 'pointer' }}
               onClick={handleMenuOpen}
-              sx={{ bgcolor: 'primary.main', cursor: 'pointer', fontSize: 16, height: 36, width: 36 }}
-            >
-              {userAvatar}
-            </Avatar>
+            />
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
@@ -209,6 +240,9 @@ export default function Layout({ children }) {
                 <Typography variant="body2" color="text.secondary">{userEmail}</Typography>
               </MenuItem>
               <Divider />
+              <MenuItem onClick={() => { handleMenuClose(); navigate('/profile'); }}>
+                <PersonIcon fontSize="small" sx={{ mr: 1 }} /> Mi Perfil
+              </MenuItem>
               <MenuItem onClick={handleLogout}>
                 <LogoutIcon fontSize="small" sx={{ mr: 1 }} /> Cerrar Sesión
               </MenuItem>
@@ -227,7 +261,16 @@ export default function Layout({ children }) {
           onClose={handleDrawerToggle}
           ModalProps={{ keepMounted: true }}
           sx={{
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: drawerWidth,
+              background: (theme) => theme.palette.mode === 'dark'
+                ? 'linear-gradient(180deg, rgba(15,23,42,0.92) 0%, rgba(30,41,59,0.85) 100%)'
+                : 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.85) 100%)',
+              backdropFilter: 'blur(16px)',
+              borderRight: '1px solid',
+              borderColor: 'divider',
+            },
             display: { md: 'none', xs: 'block' },
           }}
         >
@@ -236,7 +279,16 @@ export default function Layout({ children }) {
         <Drawer
           variant="permanent"
           sx={{
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: drawerWidth,
+              background: (theme) => theme.palette.mode === 'dark'
+                ? 'linear-gradient(180deg, rgba(15,23,42,0.92) 0%, rgba(30,41,59,0.85) 100%)'
+                : 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.85) 100%)',
+              backdropFilter: 'blur(16px)',
+              borderRight: '1px solid',
+              borderColor: 'divider',
+            },
             display: { md: 'block', xs: 'none' },
           }}
           open

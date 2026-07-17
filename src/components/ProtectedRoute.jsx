@@ -1,23 +1,16 @@
 import LockIcon from '@mui/icons-material/Lock';
-import { Box, Button, CircularProgress, Paper, Typography } from '@mui/material';
-import { useKeycloak } from '@react-keycloak/web';
+import { Box, Button, Paper, Typography } from '@mui/material';
+import { useAuth } from '../context/AuthContext';
 
 const ALLOWED_ROLES = ['hr', 'admin'];
 
 export default function ProtectedRoute({ children }) {
-  const { keycloak, initialized } = useKeycloak();
+  const { isAuthenticated, user } = useAuth();
 
-  if (!initialized) {
-    return (
-      <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', minHeight: '100vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // Si no está autenticado, App.jsx ya muestra el LoginPage — no llegar aquí
+  if (!isAuthenticated) return null;
 
-  if (!keycloak?.authenticated) {return null;}
-
-  const roles = keycloak.tokenParsed?.realm_access?.roles || [];
+  const roles = user?.realm_access?.roles || [];
   const hasAccess = roles.some(r => ALLOWED_ROLES.includes(r));
 
   if (!hasAccess) {
