@@ -7,7 +7,6 @@ import {
   MenuItem, Paper, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, TablePagination, TextField, Typography,
 } from '@mui/material';
-import { alpha } from '@mui/material/styles';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { getAllEmployees } from '../../api/employees';
