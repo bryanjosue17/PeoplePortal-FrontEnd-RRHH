@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
