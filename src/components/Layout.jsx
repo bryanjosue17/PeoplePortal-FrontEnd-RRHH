@@ -224,12 +224,15 @@ export default function Layout({ children }) {
             <Typography variant="body2" sx={{ display: { sm: 'block', xs: 'none' } }}>
               {userName}
             </Typography>
-            <DiceAvatar
-              seed={userEmail || userName}
-              size={36}
-              sx={{ cursor: 'pointer' }}
+            <Box
               onClick={handleMenuOpen}
-            />
+              sx={{ cursor: 'pointer', borderRadius: '50%', display: 'flex', alignItems: 'center' }}
+            >
+              <DiceAvatar
+                seed={userEmail || userName}
+                size={36}
+              />
+            </Box>
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}

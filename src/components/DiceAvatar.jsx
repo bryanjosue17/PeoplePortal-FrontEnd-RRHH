@@ -1,7 +1,7 @@
 import { Avatar as MuiAvatar } from '@mui/material';
 import { useMemo } from 'react';
 
-export default function DiceAvatar({ seed = 'User', size = 128, sx = {} }) {
+export default function DiceAvatar({ seed = 'User', size = 128, sx = {}, ...props }) {
   const avatarUrl = useMemo(() => {
     // We use the lorelei style as requested/suggested
     const url = new URL('https://api.dicebear.com/7.x/lorelei/svg');
@@ -11,5 +11,5 @@ export default function DiceAvatar({ seed = 'User', size = 128, sx = {} }) {
     return url.href;
   }, [seed, size]);
 
-  return <MuiAvatar src={avatarUrl} alt={seed} sx={{ width: size, height: size, ...sx }} />;
+  return <MuiAvatar src={avatarUrl} alt={seed} sx={{ width: size, height: size, ...sx }} {...props} />;
 }
