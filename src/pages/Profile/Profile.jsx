@@ -1,4 +1,3 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BadgeIcon from '@mui/icons-material/Badge';
 import BusinessIcon from '@mui/icons-material/Business';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -28,7 +27,7 @@ function Profile() {
   const { user } = useAuth(); // keycloak parsed token
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, _setError] = useState(null);
   const [editing, setEditing] = useState(false);
 
   const formik = useFormik({

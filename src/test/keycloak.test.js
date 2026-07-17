@@ -28,7 +28,7 @@ it('falls back to default URL when VITE_KEYCLOAK_URL is not set', async () => {
   expect(keycloakJs.default).toHaveBeenCalledWith({
     clientId: 'peopleportal-frontend',
     realm: 'peopleportal',
-    url: 'http://localhost:8080',
+    url: 'http://localhost:30080',
   });
 });
 
