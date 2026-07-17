@@ -8,7 +8,7 @@ Panel de administración de Recursos Humanos. Gestiona empleados, solicitudes, d
 |---|---|
 | UI | React 19 + MUI v9 |
 | Build | Vite 8 |
-| Auth | Keycloak (PKCE S256) + ProtectedRoute |
+| Auth | AuthContext + ROPC (login propio → Keycloak token endpoint) + ProtectedRoute |
 | HTTP | Axios + interceptor Bearer |
 | PDF | @react-pdf/renderer |
 | Test | Vitest + Testing Library |
@@ -17,11 +17,7 @@ Panel de administración de Recursos Humanos. Gestiona empleados, solicitudes, d
 ## Scripts
 
 ```bash
-<<<<<<< Updated upstream
-npm run dev           # Dev server (localhost:5173; usa 5174 si 5173 está ocupado)
-=======
 npm run dev           # Dev server → http://localhost:5174
->>>>>>> Stashed changes
 npm run build         # Build producción
 npm run test          # Tests (Vitest)
 npm run test:coverage # Tests con reporte de cobertura (Codacy)
@@ -38,6 +34,8 @@ npm run lint          # oxlint
 | Solicitudes | `/requests` | Aprobar / rechazar solicitudes |
 | Comunicados | `/announcements` | Publicar avisos internos |
 | Beneficios | `/benefits` | CRUD de catálogo de beneficios |
+| Nómina | `/nomina` | Registros de nómina + adjuntar archivos |
+| Usuarios | `/users` | Gestión de cuentas Keycloak (roles, reset-pw) |
 | Reportes | `/reports` | Reportes dinámicos + exportación PDF |
 
 ## Acceso
@@ -46,8 +44,8 @@ Solo usuarios con rol **`hr`** o **`admin`** en Keycloak tienen acceso. Usuarios
 
 ## Despliegue
 
-- **Docker**: imagen `peopleportal-frontend-rrhh:latest` (multi-stage + nginx)
-- **K8s**: NodePort `:30082` — `http://localhost:30082`
+- **Docker/GHCR**: `ghcr.io/bryanjosue17/peopleportal-frontend-rrhh:main` (publicado por CI)
+- **K8s**: NodePort `:30082` — `http://localhost:30082` — `imagePullPolicy: Always` + `imagePullSecrets: ghcr-secret`
 - **Nginx**: proxy `/api/` → `peopleportal-api-service:80`
 
 ## Documentación técnica
