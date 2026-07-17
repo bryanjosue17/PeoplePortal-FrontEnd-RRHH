@@ -11,8 +11,9 @@
 | `/requests` | `Requests.jsx` | Solicitudes con filtros, aprobación, rechazo y comentario RRHH |
 | `/announcements` | `Announcements.jsx` | Publicar, visualizar y desactivar comunicados internos |
 | `/benefits` | `Benefits.jsx` | Catálogo CRUD: crear, editar y desactivar beneficios |
-| `/vouchers` | `Vouchers.jsx` | Gestión de vouchers de pago: crear, subir archivos (nómina) |
-| `/reports` | `Reports.jsx` | 5 reportes con charts interactivos (Chart.js), tablas con `%` y diferencial vs promedio, PDFs completos con barras visuales y Reporte General consolidado (2 páginas) |
+| `/vouchers` (ahora `/nomina`) | `Nomina.jsx` | Registros de nómina: crear, subir archivos (PATCH upload) |
+| `/users` | `UserManagement.jsx` | Gestión de cuentas Keycloak: crear, editar roles, reset-pw, activar/desactivar |
+| `/reports` | `Reports.jsx` | 5 reportes con charts interactivos (Chart.js), tablas con `%` y diferencial vs promedio, exportación PDF |
 | `/access-denied` | `AccessDenied.jsx` | Pantalla para usuarios sin rol `hr` o `admin` |
 
 ---
@@ -55,7 +56,10 @@ PeoplePortal-FrontEnd-RRHH/
 │   ├── App.jsx
 │   └── main.jsx
 ├── k8s/
-│   └── frontend-rrhh.yaml
+│   ├── base/               ← Deployment + Service base
+│   └── overlays/
+│       ├── develop/        ← imagen :develop (Docker Desktop)
+│       └── production/     ← imagen :main
 ├── Dockerfile
 ├── nginx.conf
 ├── vite.config.js
