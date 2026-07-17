@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: peopleportal-frontend-rrhh:latest
-          imagePullPolicy: Never
+          image: ghcr.io/bryanjosue17/peopleportal-frontend-rrhh:main
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           resources:
