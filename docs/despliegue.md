@@ -72,7 +72,7 @@ Manifiesto: `k8s/frontend-rrhh.yaml`
 
 ```bash
 kubectl apply -f k8s/frontend-rrhh.yaml
-kubectl rollout status deployment/peopleportal-frontend-rrhh -n peopleportal
+kubectl rollout status deployment/frontend-rrhh -n peopleportal
 ```
 
 | Parámetro | Valor |
