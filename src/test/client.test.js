@@ -12,6 +12,9 @@ vi.mock('axios', () => {
           interceptorFn = fn;
         }),
       },
+      response: {
+        use: vi.fn(),
+      },
     },
   };
   return {
@@ -64,13 +67,13 @@ it('adds Authorization header when token exists in sessionStorage', async () => 
   sessionStorage.setItem('keycloak-token', 'test-token-123');
   const fn = await getInterceptor();
   const config = { headers: {} };
-  const result = fn(config);
+  const result = await fn(config);
   expect(result.headers.Authorization).toBe('Bearer test-token-123');
 });
 
 it('does not add Authorization header when no token in sessionStorage', async () => {
   const fn = await getInterceptor();
   const config = { headers: {} };
-  const result = fn(config);
+  const result = await fn(config);
   expect(result.headers.Authorization).toBeUndefined();
 });
