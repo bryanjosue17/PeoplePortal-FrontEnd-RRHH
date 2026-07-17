@@ -53,13 +53,13 @@ Base URL: configurada por `VITE_API_URL` (vacío = misma origin).
 
 ---
 
-## Vouchers de Pago
+## Nómina
 
 | Método | Ruta | Página | Descripción |
 |---|---|---|---|
-| `GET` | `/api/hr/vouchers` | Vouchers | Listar todos los vouchers de todos los empleados |
-| `POST` | `/api/hr/vouchers` | Vouchers | Crear voucher para un empleado (período + empleado) |
-| `PATCH` | `/api/hr/vouchers/:id/upload` | Vouchers | Adjuntar URL de archivo PDF/imagen al voucher |
+| `GET` | `/api/hr/nomina` | Nomina | Listar todos los registros de nómina |
+| `POST` | `/api/hr/nomina` | Nomina | Crear registro de nómina para un empleado (período + tipo) |
+| `PATCH` | `/api/hr/nomina/:id/upload` | Nomina | Adjuntar URL de archivo al registro de nómina |
 
 ---
 
