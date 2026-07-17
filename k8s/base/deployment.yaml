@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-rrhh
+  namespace: peopleportal
+  labels:
+    app: frontend-rrhh
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-rrhh
+  template:
+    metadata:
+      labels:
+        app: frontend-rrhh
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: nginx
+          image: ghcr.io/bryanjosue17/peopleportal-frontend-rrhh:develop
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
