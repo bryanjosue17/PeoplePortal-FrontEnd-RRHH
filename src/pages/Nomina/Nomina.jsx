@@ -118,33 +118,66 @@ export default function Nomina() {
 
   return (
     <Box>
-      {/* Header */}
-      <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
-        <Box sx={{ alignItems: 'center', display: 'flex', gap: 1.5 }}>
-          <Box sx={{ alignItems: 'center', bgcolor: alpha('#34D399', 0.12), borderRadius: 2, color: 'primary.main', display: 'flex', p: 1 }}>
-            <MonetizationOnIcon />
+      {/* Glassmorphic Header Banner */}
+      <Paper
+        elevation={0}
+        sx={{
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(52,211,153,0.06) 100%)',
+          backdropFilter: 'blur(16px)',
+          borderRadius: 3,
+          mb: 4,
+          p: { xs: 2.5, md: 3.5 },
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderLeft: '5px solid #10B981',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, position: 'relative', zIndex: 1 }}>
+          <Box sx={{ p: 1.5, borderRadius: 2.5, background: 'linear-gradient(135deg, #10B981, #34D399)', color: '#022C22', display: 'flex', boxShadow: '0 6px 16px rgba(16,185,129,0.3)' }}>
+            <MonetizationOnIcon fontSize="medium" />
           </Box>
           <Box>
-            <Typography variant="h4" fontWeight={700}>Nómina</Typography>
-            <Typography variant="body2" color="text.secondary">Gestión de comprobantes y pagos de nómina</Typography>
+            <Typography variant="h4" fontWeight={800}>Nómina</Typography>
+            <Typography variant="body2" color="text.secondary">Gestión administrativa de comprobantes, vales y pagos de nómina</Typography>
           </Box>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)} sx={{ position: 'relative', zIndex: 1, width: { xs: '100%', sm: 'auto' }, background: 'linear-gradient(135deg, #10B981, #059669)', fontWeight: 700 }}>
           Nuevo Registro
         </Button>
-      </Box>
+        <Box sx={{
+          position: 'absolute', right: -40, top: -40, width: 220, height: 220, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(255,255,255,0) 70%)', zIndex: 0
+        }} />
+      </Paper>
 
       {/* KPI pills */}
-      <Grid container spacing={2} sx={{ mb: 2 }}>
+      <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
-          { label: 'Total registros', value: records.length, color: 'primary' },
-          { label: 'Pendientes de archivo', value: pending, color: 'warning' },
-          { label: 'Disponibles para descarga', value: available, color: 'success' },
+          { label: 'Total registros', value: records.length, color: '#3B82F6', mainColor: 'primary.main' },
+          { label: 'Pendientes de archivo', value: pending, color: '#F59E0B', mainColor: 'warning.main' },
+          { label: 'Disponibles para descarga', value: available, color: '#10B981', mainColor: 'success.main' },
         ].map(k => (
           <Grid size={{ md: 4, xs: 12 }} key={k.label}>
-            <Card sx={{ p: 2 }}>
-              <Typography variant="h4" fontWeight={700} color={`${k.color}.main`}>{k.value}</Typography>
-              <Typography variant="body2" color="text.secondary">{k.label}</Typography>
+            <Card sx={{
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderTop: `4px solid ${k.color}`,
+              borderRadius: 3,
+              p: 2.5,
+              transition: 'transform 0.2s',
+              '&:hover': { transform: 'translateY(-3px)' }
+            }}>
+              <Typography variant="h3" fontWeight={800} color={k.mainColor}>{k.value}</Typography>
+              <Typography variant="body2" color="text.secondary" fontWeight={500}>{k.label}</Typography>
             </Card>
           </Grid>
         ))}
@@ -157,7 +190,15 @@ export default function Nomina() {
       )}
 
       {/* Filters */}
-      <Paper sx={{ mb: 2, p: 2 }}>
+      <Paper elevation={0} sx={{
+        mb: 3,
+        p: 2.5,
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
+      }}>
         <Grid container spacing={2}>
           <Grid size={{ md: 4, xs: 12 }}>
             <TextField size="small" fullWidth label="Buscar período" value={filterPeriod}
@@ -185,7 +226,14 @@ export default function Nomina() {
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
         <>
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} elevation={0} sx={{
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 3,
+            overflowX: 'auto',
+          }}>
             <Table>
               <TableHead>
                 <TableRow>

@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 import { LoginPage } from './pages/LoginPage.js';
 import { DashboardPage } from './pages/DashboardPage.js';
+import { ProfilePage } from './pages/ProfilePage.js';
 import { EmployeesPage } from './pages/EmployeesPage.js';
 import { ApprovalsPage } from './pages/ApprovalsPage.js';
 import { AnnouncementsPage } from './pages/AnnouncementsPage.js';
@@ -22,6 +23,7 @@ test.describe('Portal RRHH - Full Flows (POM based)', () => {
     test.setTimeout(240000); // Flujos completos con llamadas a API reales
     const loginPage = new LoginPage(page);
     const dashboardPage = new DashboardPage(page);
+    const profilePage = new ProfilePage(page);
     const employeesPage = new EmployeesPage(page);
     const approvalsPage = new ApprovalsPage(page);
     const announcementsPage = new AnnouncementsPage(page);
@@ -43,65 +45,72 @@ test.describe('Portal RRHH - Full Flows (POM based)', () => {
       await shot('01-dashboard');
     });
 
-    await test.step('2. Módulo de Empleados', async () => {
+    await test.step('2. Módulo de Perfil', async () => {
+      await dashboardPage.navigateTo('perfil');
+      await profilePage.verifyLoaded();
+      await profilePage.interact({ onFormReady: () => shot('02-perfil-form') });
+      await shot('02-perfil');
+    });
+
+    await test.step('3. Módulo de Empleados', async () => {
       await dashboardPage.navigateTo('empleados');
       await employeesPage.verifyLoaded();
-      await employeesPage.interact({ onFormReady: () => shot('02-empleados-form') });
-      await shot('02-empleados');
+      await employeesPage.interact({ onFormReady: () => shot('03-empleados-form') });
+      await shot('03-empleados');
     });
 
-    await test.step('3. Módulo de Documentos', async () => {
+    await test.step('4. Módulo de Documentos', async () => {
       await dashboardPage.navigateTo('documentos');
       await documentsPage.verifyLoaded();
-      await documentsPage.interact({ onFormReady: () => shot('03-documentos-form') }); // GET /api/hr/documents + POST /api/hr/documents
-      await shot('03-documentos');
+      await documentsPage.interact({ onFormReady: () => shot('04-documentos-form') }); // GET /api/hr/documents + POST /api/hr/documents
+      await shot('04-documentos');
     });
 
-    await test.step('4. Módulo de Aprobaciones / Solicitudes', async () => {
+    await test.step('5. Módulo de Aprobaciones / Solicitudes', async () => {
       await dashboardPage.navigateTo('solicitudes');
       await approvalsPage.verifyLoaded();
-      await approvalsPage.interact({ onFormReady: () => shot('04-solicitudes-form') }); // PATCH /api/hr/requests/{id}/status
-      await shot('04-solicitudes');
+      await approvalsPage.interact({ onFormReady: () => shot('05-solicitudes-form') }); // PATCH /api/hr/requests/{id}/status
+      await shot('05-solicitudes');
     });
 
-    await test.step('5. Módulo de Comunicados', async () => {
+    await test.step('6. Módulo de Comunicados', async () => {
       await dashboardPage.navigateTo('comunicados');
       await announcementsPage.verifyLoaded();
-      await announcementsPage.interact({ onFormReady: () => shot('05-comunicados-form') }); // POST /api/hr/announcements
-      await shot('05-comunicados');
+      await announcementsPage.interact({ onFormReady: () => shot('06-comunicados-form') }); // POST /api/hr/announcements
+      await shot('06-comunicados');
     });
 
-    await test.step('6. Módulo de Beneficios', async () => {
+    await test.step('7. Módulo de Beneficios', async () => {
       await dashboardPage.navigateTo('beneficios');
       await benefitsPage.verifyLoaded();
-      await benefitsPage.interact({ onFormReady: () => shot('06-beneficios-form') }); // POST /api/hr/benefits
-      await shot('06-beneficios');
+      await benefitsPage.interact({ onFormReady: () => shot('07-beneficios-form') }); // POST /api/hr/benefits
+      await shot('07-beneficios');
     });
 
-    await test.step('7. Módulo de Nómina', async () => {
+    await test.step('8. Módulo de Nómina', async () => {
       await dashboardPage.navigateTo('Nómina');
       await nominaPage.verifyLoaded();
-      await nominaPage.interact({ onFormReady: () => shot('07-nomina-form') }); // POST /api/hr/nomina
-      await shot('07-nomina');
+      await nominaPage.interact({ onFormReady: () => shot('08-nomina-form') }); // POST /api/hr/nomina
+      await shot('08-nomina');
     });
 
-    await test.step('8. Módulo de Usuarios', async () => {
+    await test.step('9. Módulo de Usuarios', async () => {
       await dashboardPage.navigateTo('usuarios');
       await userManagementPage.verifyLoaded();
-      await userManagementPage.interact({ onFormReady: () => shot('08-usuarios-form') }); // POST /api/hr/users
-      await shot('08-usuarios');
+      await userManagementPage.interact({ onFormReady: () => shot('09-usuarios-form') }); // POST /api/hr/users
+      await shot('09-usuarios');
     });
 
-    await test.step('9. Módulo de Reportes', async () => {
+    await test.step('10. Módulo de Reportes', async () => {
       await dashboardPage.navigateTo('reportes');
       await reportsPage.verifyLoaded();
-      await shot('09-reportes');
+      await shot('10-reportes');
     });
 
-    await test.step('10. Volver al Dashboard', async () => {
+    await test.step('11. Volver al Dashboard', async () => {
       await dashboardPage.navigateTo('dashboard');
       await dashboardPage.verifyLoaded();
-      await shot('10-dashboard-final');
+      await shot('11-dashboard-final');
     });
   });
 });

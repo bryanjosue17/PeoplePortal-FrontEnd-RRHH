@@ -3,7 +3,7 @@ import CampaignIcon from '@mui/icons-material/Campaign';
 import {
   Box, Button, Card, CardActions, CardContent, Chip, CircularProgress,
   Dialog, DialogActions, DialogContent, DialogTitle, Grid,
-  MenuItem, TextField, Typography
+  MenuItem, Paper, TextField, Typography
 } from '@mui/material';
 import { useFormik } from 'formik';
 import { useEffect, useState } from 'react';
@@ -68,30 +68,74 @@ export default function Announcements() {
 
   return (
     <Box>
-      <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: { sm: 0, xs: 1 }, justifyContent: 'space-between', mb: 3 }}>
-        <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
-          <CampaignIcon color="primary" />
-          <Typography variant="h4" fontWeight={700}>Comunicados</Typography>
+      {/* Glassmorphic Header Banner */}
+      <Paper
+        elevation={0}
+        sx={{
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(52,211,153,0.06) 100%)',
+          backdropFilter: 'blur(16px)',
+          borderRadius: 3,
+          mb: 4,
+          p: { xs: 2.5, md: 3.5 },
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderLeft: '5px solid #10B981',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, position: 'relative', zIndex: 1 }}>
+          <Box sx={{ p: 1.5, borderRadius: 2.5, background: 'linear-gradient(135deg, #10B981, #34D399)', color: '#022C22', display: 'flex', boxShadow: '0 6px 16px rgba(16,185,129,0.3)' }}>
+            <CampaignIcon fontSize="medium" />
+          </Box>
+          <Box>
+            <Typography variant="h4" fontWeight={800}>Comunicados institucionales</Typography>
+            <Typography variant="body2" color="text.secondary">Creación, publicación y control de avisos, boletines y comunicados oficiales para la organización</Typography>
+          </Box>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ width: { sm: 'auto', xs: '100%' } }}>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setDialogOpen(true)} sx={{ position: 'relative', zIndex: 1, width: { xs: '100%', sm: 'auto' }, background: 'linear-gradient(135deg, #10B981, #059669)', fontWeight: 700 }}>
           Nuevo Comunicado
         </Button>
-      </Box>
+        <Box sx={{
+          position: 'absolute', right: -40, top: -40, width: 220, height: 220, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(255,255,255,0) 70%)', zIndex: 0
+        }} />
+      </Paper>
+
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>
       ) : (
         <Grid container spacing={3}>
           {announcements.length === 0 && (
             <Grid size={12}>
-              <Typography color="text.secondary" align="center">No hay comunicados activos</Typography>
+              <Card sx={{
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 3,
+                p: 4,
+              }}>
+                <Typography color="text.secondary" align="center">No hay comunicados activos</Typography>
+              </Card>
             </Grid>
           )}
           {announcements.map((ann) => (
             <Grid size={{ md: 6, xs: 12 }} key={ann.id}>
               <Card sx={{
-                borderTop: `3px solid ${ann.type === 'Urgente' ? '#f44336' : ann.type === 'HR' ? '#34D399' : '#60A5FA'}`,
-                transition: 'transform 0.2s ease',
-                '&:hover': { transform: 'translateY(-2px)' },
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderTop: `4px solid ${ann.type === 'Urgente' ? '#f44336' : ann.type === 'HR' ? '#10B981' : '#3B82F6'}`,
+                borderRadius: 3,
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 12px 24px rgba(0,0,0,0.1)' },
               }}>
                 <CardContent>
                   <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 1 }}>

@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ProtectedRoute from '../components/ProtectedRoute';
 
-const mockUseKeycloak = vi.fn();
+const mockUseAuth = vi.fn();
 
-vi.mock('@react-keycloak/web', () => ({
-  useKeycloak: () => mockUseKeycloak(),
+vi.mock('../context/AuthContext', () => ({
+  useAuth: () => mockUseAuth(),
 }));
 
 describe('ProtectedRoute', () => {
@@ -13,26 +13,10 @@ describe('ProtectedRoute', () => {
     vi.clearAllMocks();
   });
 
-  it('muestra spinner cuando no esta inicializado', () => {
-    mockUseKeycloak.mockReturnValue({
-      initialized: false,
-      keycloak: null,
-    });
-
-    render(
-      <ProtectedRoute>
-        <div>Contenido</div>
-      </ProtectedRoute>
-    );
-
-    expect(screen.queryByText('Contenido')).not.toBeInTheDocument();
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
-  });
-
   it('no renderiza children cuando no esta autenticado', () => {
-    mockUseKeycloak.mockReturnValue({
-      initialized: true,
-      keycloak: { authenticated: false },
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: false,
+      user: null,
     });
 
     const { container } = render(
@@ -45,14 +29,11 @@ describe('ProtectedRoute', () => {
   });
 
   it('muestra acceso denegado sin rol hr/admin', () => {
-    mockUseKeycloak.mockReturnValue({
-      initialized: true,
-      keycloak: {
-        authenticated: true,
-        tokenParsed: {
-          realm_access: {
-            roles: ['employee'],
-          },
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      user: {
+        realm_access: {
+          roles: ['employee'],
         },
       },
     });
@@ -68,14 +49,11 @@ describe('ProtectedRoute', () => {
   });
 
   it('renderiza children con rol hr', () => {
-    mockUseKeycloak.mockReturnValue({
-      initialized: true,
-      keycloak: {
-        authenticated: true,
-        tokenParsed: {
-          realm_access: {
-            roles: ['hr'],
-          },
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      user: {
+        realm_access: {
+          roles: ['hr'],
         },
       },
     });

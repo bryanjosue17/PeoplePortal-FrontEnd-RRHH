@@ -3,15 +3,16 @@ import CampaignIcon from '@mui/icons-material/Campaign';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PeopleIcon from '@mui/icons-material/People';
 import SpeedIcon from '@mui/icons-material/Speed';
+import SecurityIcon from '@mui/icons-material/Security';
 import {
-  Box, Button, Card, CardContent, CircularProgress, Grid, Typography
+  Box, Button, Card, CardContent, CircularProgress, Grid, Typography, Paper, Chip
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 import {
   ArcElement, BarElement, CategoryScale, Chart as ChartJS,
   Legend, LinearScale, Tooltip,
 } from 'chart.js';
-import { useKeycloak } from '@react-keycloak/web';
+import { useAuth } from '../../context/AuthContext';
 import { useEffect, useState } from 'react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { useNavigate } from 'react-router-dom';
@@ -19,11 +20,12 @@ import { getActiveAnnouncements } from '../../api/announcements';
 import { getAllEmployees } from '../../api/employees';
 import { getAllDocuments } from '../../api/hrDocuments';
 import { getAllRequests } from '../../api/hrRequests';
+import DiceAvatar from '../../components/DiceAvatar';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 export default function Dashboard() {
-  const { keycloak } = useKeycloak();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -63,50 +65,110 @@ export default function Dashboard() {
   }
 
   const summaryCards = [
-    { color: '#2e7d32', icon: <PeopleIcon sx={{ fontSize: 28 }} />, label: 'Total Empleados', value: data?.totalEmployees ?? 0 },
+    { color: '#10B981', icon: <PeopleIcon sx={{ fontSize: 28 }} />, label: 'Total Empleados', value: data?.totalEmployees ?? 0 },
     { color: '#ed6c02', icon: <AssignmentIcon sx={{ fontSize: 28 }} />, label: 'Solicitudes Activas', value: data?.pendingRequests ?? 0 },
-    { color: '#1565c0', icon: <DescriptionIcon sx={{ fontSize: 28 }} />, label: 'Documentos Activos', value: data?.activeDocuments ?? 0 },
-    { color: '#9c27b0', icon: <CampaignIcon sx={{ fontSize: 28 }} />, label: 'Comunicados Recientes', value: data?.recentAnnouncements ?? 0 },
+    { color: '#3B82F6', icon: <DescriptionIcon sx={{ fontSize: 28 }} />, label: 'Documentos Activos', value: data?.activeDocuments ?? 0 },
+    { color: '#8B5CF6', icon: <CampaignIcon sx={{ fontSize: 28 }} />, label: 'Comunicados Recientes', value: data?.recentAnnouncements ?? 0 },
   ];
+
+  const userName = user?.name || user?.preferred_username || 'Administrador';
+  const displayEmail = user?.email || 'admin@forza.com';
 
   return (
     <Box>
-      <Box sx={{ alignItems: 'center', display: 'flex', gap: 1.5, mb: 4 }}>
-        <SpeedIcon color="primary" sx={{ fontSize: 36 }} />
-        <Box>
-          <Typography variant="h4" fontWeight={700}>
-            Bienvenido, {keycloak?.tokenParsed?.given_name || keycloak?.tokenParsed?.preferred_username || 'Usuario'}
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Panel de administración de Recursos Humanos
-          </Typography>
+      {/* Banner Superior Glassmorphism con Gradiente Dinámico */}
+      <Paper
+        elevation={0}
+        sx={{
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(14,165,233,0.12) 100%)',
+          backdropFilter: 'blur(16px)',
+          borderRadius: 3,
+          mb: 4,
+          p: { xs: 3, md: 4.5 },
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'rgba(16,185,129,0.25)',
+          boxShadow: '0 8px 32px rgba(16,185,129,0.08)',
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', gap: 3, position: 'relative', zIndex: 1 }}>
+          <Box sx={{ p: 0.5, borderRadius: '50%', background: 'linear-gradient(135deg, #10B981, #0EA5E9)', boxShadow: '0 8px 24px rgba(16,185,129,0.3)' }}>
+            <DiceAvatar seed={displayEmail} size={90} sx={{ border: '3px solid', borderColor: 'background.paper' }} />
+          </Box>
+          <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+            <Typography variant="h3" fontWeight={850} sx={{ mb: 0.5, letterSpacing: '-0.02em' }}>
+              ¡Bienvenido al Centro de Mando, {userName}!
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 1.5, maxWidth: 650 }}>
+              Control total sobre el capital humano, solicitudes pendientes, documentos organizacionales y métricas corporativas en tiempo real.
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, justifyContent: { xs: 'center', sm: 'flex-start' } }}>
+              <Chip 
+                icon={<SecurityIcon sx={{ fontSize: 16 }} />} 
+                label="Portal RRHH & Administración" 
+                size="small"
+                color="success" 
+                variant="outlined"
+                sx={{ fontWeight: 650, borderRadius: 1.5 }}
+              />
+              <Chip 
+                label="Monitoreo Activo" 
+                size="small"
+                color="info" 
+                sx={{ fontWeight: 600, borderRadius: 1.5 }}
+              />
+            </Box>
+          </Box>
         </Box>
-      </Box>
+        
+        {/* Background Decorative Circles */}
+        <Box sx={{
+          position: 'absolute', right: -60, top: -60, width: 260, height: 260, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.18) 0%, rgba(255,255,255,0) 70%)', zIndex: 0
+        }} />
+        <Box sx={{
+          position: 'absolute', right: 140, bottom: -80, width: 220, height: 220, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(14,165,233,0.15) 0%, rgba(255,255,255,0) 70%)', zIndex: 0
+        }} />
+      </Paper>
+
       <Grid container spacing={3}>
         {summaryCards.map((card) => (
           <Grid size={{ md: 3, sm: 6, xs: 12 }} key={card.label}>
             <Card sx={{
-              borderLeft: `3px solid ${card.color}`,
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderTop: `4px solid ${card.color}`,
+              borderRadius: 3,
               height: '100%',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-              '&:hover': { transform: 'translateY(-2px)' },
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              '&:hover': { 
+                transform: 'translateY(-4px)',
+                boxShadow: `0 12px 24px -10px ${alpha(card.color, 0.3)}`,
+                borderColor: alpha(card.color, 0.4),
+              },
             }}>
-              <CardContent>
-                <Box sx={{ alignItems: 'center', display: 'flex', gap: 2 }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ alignItems: 'center', display: 'flex', gap: 2.5 }}>
                   <Box sx={{
                     alignItems: 'center',
-                    bgcolor: alpha(card.color, 0.12),
-                    borderRadius: 2,
+                    background: `linear-gradient(135deg, ${alpha(card.color, 0.2)}, ${alpha(card.color, 0.05)})`,
+                    border: `1px solid ${alpha(card.color, 0.3)}`,
+                    borderRadius: 2.5,
                     color: card.color,
                     display: 'flex',
                     justifyContent: 'center',
-                    p: 1.5,
+                    p: 2,
+                    boxShadow: `0 4px 12px ${alpha(card.color, 0.15)}`,
                   }}>
                     {card.icon}
                   </Box>
                   <Box>
-                    <Typography variant="h4" fontWeight={700}>{card.value}</Typography>
-                    <Typography variant="body2" color="text.secondary">{card.label}</Typography>
+                    <Typography variant="h3" fontWeight={800} sx={{ lineHeight: 1.1, mb: 0.5 }}>{card.value}</Typography>
+                    <Typography variant="body2" color="text.secondary" fontWeight={500}>{card.label}</Typography>
                   </Box>
                 </Box>
               </CardContent>
@@ -114,25 +176,52 @@ export default function Dashboard() {
           </Grid>
         ))}
       </Grid>
-      <Typography variant="h5" sx={{ mb: 2, mt: 4 }}>Acciones Rápidas</Typography>
-      <Grid container spacing={2}>
+
+      <Typography variant="h5" fontWeight={750} sx={{ mb: 2.5, mt: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
+        <SpeedIcon color="primary" /> Acciones Rápidas
+      </Typography>
+      <Grid container spacing={2.5}>
         <Grid size={{ sm: 3, xs: 6 }}>
-          <Button variant="contained" fullWidth sx={{ py: 2 }} onClick={() => navigate('/employees')}>
+          <Button variant="contained" fullWidth sx={{ 
+            py: 2.5, borderRadius: 2.5, fontWeight: 700,
+            background: 'linear-gradient(135deg, #10B981, #059669)',
+            boxShadow: '0 6px 16px rgba(16,185,129,0.25)',
+            transition: 'transform 0.2s',
+            '&:hover': { transform: 'translateY(-2px)' }
+          }} onClick={() => navigate('/employees')}>
             Gestionar Empleados
           </Button>
         </Grid>
         <Grid size={{ sm: 3, xs: 6 }}>
-          <Button variant="contained" color="secondary" fullWidth sx={{ py: 2 }} onClick={() => navigate('/documents')}>
+          <Button variant="contained" fullWidth sx={{ 
+            py: 2.5, borderRadius: 2.5, fontWeight: 700,
+            background: 'linear-gradient(135deg, #3B82F6, #2563EB)',
+            boxShadow: '0 6px 16px rgba(59,130,246,0.25)',
+            transition: 'transform 0.2s',
+            '&:hover': { transform: 'translateY(-2px)' }
+          }} onClick={() => navigate('/documents')}>
             Revisar Documentos
           </Button>
         </Grid>
         <Grid size={{ sm: 3, xs: 6 }}>
-          <Button variant="contained" color="warning" fullWidth sx={{ py: 2 }} onClick={() => navigate('/requests')}>
-            Solicitudes
+          <Button variant="contained" fullWidth sx={{ 
+            py: 2.5, borderRadius: 2.5, fontWeight: 700,
+            background: 'linear-gradient(135deg, #F59E0B, #D97706)',
+            boxShadow: '0 6px 16px rgba(245,158,11,0.25)',
+            transition: 'transform 0.2s',
+            '&:hover': { transform: 'translateY(-2px)' }
+          }} onClick={() => navigate('/requests')}>
+            Solicitudes Pendientes
           </Button>
         </Grid>
         <Grid size={{ sm: 3, xs: 6 }}>
-          <Button variant="contained" color="secondary" fullWidth sx={{ py: 2 }} onClick={() => navigate('/announcements')}>
+          <Button variant="contained" fullWidth sx={{ 
+            py: 2.5, borderRadius: 2.5, fontWeight: 700,
+            background: 'linear-gradient(135deg, #8B5CF6, #6D28D9)',
+            boxShadow: '0 6px 16px rgba(139,92,246,0.25)',
+            transition: 'transform 0.2s',
+            '&:hover': { transform: 'translateY(-2px)' }
+          }} onClick={() => navigate('/announcements')}>
             Nuevo Comunicado
           </Button>
         </Grid>
@@ -141,7 +230,7 @@ export default function Dashboard() {
       {/* ── Charts section ── */}
       {(rawReqs.length > 0 || rawEmps.length > 0) && (
         <>
-          <Typography variant="h5" fontWeight={600} sx={{ mb: 2, mt: 4 }}>Análisis Rápido</Typography>
+          <Typography variant="h5" fontWeight={750} sx={{ mb: 2.5, mt: 4 }}>Análisis Organizacional Rápido</Typography>
           <Grid container spacing={3}>
 
             {/* Doughnut: solicitudes por estado */}
@@ -157,10 +246,17 @@ export default function Dashboard() {
               };
               return (
                 <Grid size={{ md: 4, xs: 12 }}>
-                  <Card>
+                  <Card sx={{
+                    background: 'linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 3,
+                    p: 1,
+                  }}>
                     <CardContent>
-                      <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>Solicitudes por Estado</Typography>
-                      <Box sx={{ height: 220 }}>
+                      <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Solicitudes por Estado</Typography>
+                      <Box sx={{ height: 230 }}>
                         <Doughnut data={chartData} options={{
                           responsive: true, maintainAspectRatio: false, cutout: '65%',
                           plugins: {
@@ -180,17 +276,24 @@ export default function Dashboard() {
               const depts = {};
               rawEmps.forEach(e => { if (e.department) depts[e.department] = (depts[e.department] || 0) + 1; });
               const sorted = Object.entries(depts).sort((a, b) => b[1] - a[1]).slice(0, 7);
-              const DEPT_COLORS = ['#34D399','#60A5FA','#F59E0B','#A78BFA','#FB923C','#F87171','#94A3B8'];
+              const DEPT_COLORS = ['#10B981','#3B82F6','#F59E0B','#8B5CF6','#FB923C','#F87171','#94A3B8'];
               const chartData = {
                 labels: sorted.map(([dept]) => dept),
                 datasets: [{ label: 'Empleados', data: sorted.map(([, count]) => count), backgroundColor: DEPT_COLORS, borderRadius: 6, borderWidth: 0 }],
               };
               return (
                 <Grid size={{ md: 8, xs: 12 }}>
-                  <Card>
+                  <Card sx={{
+                    background: 'linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 3,
+                    p: 1,
+                  }}>
                     <CardContent>
-                      <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>Empleados por Departamento</Typography>
-                      <Box sx={{ height: 220 }}>
+                      <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Empleados por Departamento</Typography>
+                      <Box sx={{ height: 230 }}>
                         <Bar data={chartData} options={{
                           responsive: true, maintainAspectRatio: false,
                           plugins: {

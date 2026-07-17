@@ -99,7 +99,15 @@ export default function EmployeeDetail() {
         Volver a Empleados
       </Button>
 
-      <Card sx={{ mb: 3 }}>
+      <Card sx={{
+        mb: 3,
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderLeft: '5px solid #10B981',
+        borderRadius: 3,
+      }}>
         <CardContent>
           <Box sx={{ alignItems: { sm: 'center', xs: 'flex-start' }, display: 'flex', flexDirection: { sm: 'row', xs: 'column' }, gap: 2, mb: 3 }}>
             <Box sx={{
@@ -122,7 +130,7 @@ export default function EmployeeDetail() {
               <Typography variant="h5" fontWeight={700}>{employee.fullName}</Typography>
               <Typography variant="body2" color="text.secondary">{employee.position} {employee.department ? `• ${employee.department}` : ''}</Typography>
             </Box>
-            <Button variant="outlined" startIcon={<EditIcon />} onClick={() => { setEditOpen(true); formik.setValues({ contractType: employee.contractType || '', department: employee.department || '', position: employee.position || '', status: employee.status || 'Active' }); }} sx={{ width: { sm: 'auto', xs: '100%' } }}>
+            <Button variant="contained" startIcon={<EditIcon />} onClick={() => { setEditOpen(true); formik.setValues({ contractType: employee.contractType || '', department: employee.department || '', position: employee.position || '', status: employee.status || 'Active' }); }} sx={{ width: { sm: 'auto', xs: '100%' }, background: 'linear-gradient(135deg, #10B981, #059669)', fontWeight: 700 }}>
               Editar
             </Button>
           </Box>
@@ -130,7 +138,7 @@ export default function EmployeeDetail() {
             {infoRows.map((row) => (
               <Grid size={{ md: 4, sm: 6, xs: 12 }} key={row.label}>
                 <Typography variant="caption" color="text.secondary">{row.label}</Typography>
-                <Typography variant="body1">{row.value}</Typography>
+                <Typography variant="body1" fontWeight={500}>{row.value}</Typography>
               </Grid>
             ))}
           </Grid>
@@ -138,7 +146,15 @@ export default function EmployeeDetail() {
       </Card>
 
       <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>Documentos</Typography>
-      <TableContainer component={Paper} sx={{ mb: 3, overflowX: 'auto' }}>
+      <TableContainer component={Paper} elevation={0} sx={{
+        mb: 3,
+        overflowX: 'auto',
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
+      }}>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -164,7 +180,14 @@ export default function EmployeeDetail() {
       </TableContainer>
 
       <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>Solicitudes</Typography>
-      <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+      <TableContainer component={Paper} elevation={0} sx={{
+        overflowX: 'auto',
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
+      }}>
         <Table size="small">
           <TableHead>
             <TableRow>

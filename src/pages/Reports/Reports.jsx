@@ -12,7 +12,7 @@ import {
   Filler, Legend, LinearScale, LineElement, PointElement, Tooltip,
 } from 'chart.js';
 import { Document, PDFDownloadLink, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 import {
   getActiveEmployees, getPendingDocuments, getRequestsByStatus,
@@ -61,7 +61,15 @@ function baseOpts(c) {
 // ─── Shared table component ───────────────────────────────────────────────
 function ReportTable({ data, columns }) {
   return (
-    <TableContainer component={Paper} variant="outlined" sx={{ mt: 2 }}>
+    <TableContainer component={Paper} elevation={0} sx={{
+      mt: 2,
+      background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
+      backdropFilter: 'blur(12px)',
+      border: '1px solid',
+      borderColor: 'divider',
+      borderRadius: 2.5,
+      overflowX: 'auto',
+    }}>
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -542,6 +550,26 @@ export default function Reports() {
 
   useEffect(() => { load(); }, [load]);
 
+  const sortedTimeData = useMemo(() => {
+    if (!overTimeData || overTimeData.length === 0) return [];
+    const sorted = [...overTimeData].sort((a, b) => a.period.localeCompare(b.period));
+    if (sorted.length === 1) {
+      const [y, m] = sorted[0].period.split('-').map(Number);
+      const prevM = m === 1 ? 12 : m - 1;
+      const prevY = m === 1 ? y - 1 : y;
+      return [
+        { period: `${prevY}-${String(prevM).padStart(2, '0')}`, count: 0 },
+        sorted[0]
+      ];
+    }
+    return sorted;
+  }, [overTimeData]);
+
+  const sortedPendingDocs = useMemo(() => {
+    if (!pendingDocsData || !Array.isArray(pendingDocsData)) return [];
+    return [...pendingDocsData].sort((a, b) => (b.pendingCount + b.expiredCount) - (a.pendingCount + a.expiredCount));
+  }, [pendingDocsData]);
+
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}><CircularProgress /></Box>;
   if (error)   return <Box><Alert severity="error" sx={{ mt: 2 }}>{error}</Alert></Box>;
 
@@ -554,14 +582,15 @@ export default function Reports() {
     labels:   typeData.map(r => typeLabels[r.type] ?? r.type),
     datasets: [{ label: 'Solicitudes', data: typeData.map(r => r.count), backgroundColor: TYPE_COLORS, borderRadius: 6, borderWidth: 0 }],
   };
+
   const timeChart = {
-    labels:   overTimeData.map(r => r.period),
+    labels:   sortedTimeData.map(r => r.period),
     datasets: [{
       label: 'Solicitudes',
-      data:  overTimeData.map(r => r.count),
+      data:  sortedTimeData.map(r => r.count),
       borderColor: TIME_COLOR,
       backgroundColor: `${TIME_COLOR}22`,
-      fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: TIME_COLOR,
+      fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 7, pointBackgroundColor: TIME_COLOR,
     }],
   };
   const empEntries = employeesData ? [
@@ -574,11 +603,16 @@ export default function Reports() {
     labels:   empEntries.map(e => e[0]),
     datasets: [{ data: empEntries.map(e => e[1]), backgroundColor: empEntries.map(e => e[2]), borderWidth: 0, hoverOffset: 6 }],
   };
+  const topPending = sortedPendingDocs.slice(0, 8);
   const pendingChart = {
-    labels: pendingDocsData.slice(0, 8).map(r => r.employeeName?.split(' ')[0] ?? ''),
+    labels: topPending.map(r => {
+      if (!r.employeeName) return '—';
+      const parts = r.employeeName.split(' ');
+      return parts.length > 1 ? `${parts[0]} ${parts[1][0]}.` : parts[0];
+    }),
     datasets: [
-      { label: 'Pendientes', data: pendingDocsData.slice(0, 8).map(r => r.pendingCount), backgroundColor: '#F59E0B', borderRadius: 4, borderWidth: 0 },
-      { label: 'Vencidos',   data: pendingDocsData.slice(0, 8).map(r => r.expiredCount), backgroundColor: '#F87171', borderRadius: 4, borderWidth: 0 },
+      { label: 'Pendientes', data: topPending.map(r => r.pendingCount), backgroundColor: '#F59E0B', borderRadius: 4, borderWidth: 0 },
+      { label: 'Vencidos',   data: topPending.map(r => r.expiredCount), backgroundColor: '#F87171', borderRadius: 4, borderWidth: 0 },
     ],
   };
 
@@ -613,25 +647,53 @@ export default function Reports() {
 
   return (
     <Box>
-      {/* ── Page header ────────────────────────────────────────────────── */}
-      <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Box sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
-          <AssessmentIcon color="primary" />
-          <Typography variant="h4" fontWeight={700}>Reportes</Typography>
+      {/* Glassmorphic Header Banner */}
+      <Paper
+        elevation={0}
+        sx={{
+          background: 'linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(52,211,153,0.06) 100%)',
+          backdropFilter: 'blur(16px)',
+          borderRadius: 3,
+          mb: 4,
+          p: { xs: 2.5, md: 3.5 },
+          position: 'relative',
+          overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderLeft: '5px solid #10B981',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, position: 'relative', zIndex: 1 }}>
+          <Box sx={{ p: 1.5, borderRadius: 2.5, background: 'linear-gradient(135deg, #10B981, #34D399)', color: '#022C22', display: 'flex', boxShadow: '0 6px 16px rgba(16,185,129,0.3)' }}>
+            <AssessmentIcon fontSize="medium" />
+          </Box>
+          <Box>
+            <Typography variant="h4" fontWeight={800}>Reportes Gerenciales y Estadísticas</Typography>
+            <Typography variant="body2" color="text.secondary">Análisis exhaustivo, métricas en tiempo real y descarga de reportes ejecutivos en PDF</Typography>
+          </Box>
         </Box>
         {allReady && (
           <PDFDownloadLink
-            document={<ConsolidatedPDF statusData={statusData} typeData={typeData} overTimeData={overTimeData} employeesData={employeesData} pendingDocsData={pendingDocsData} />}
+            document={<ConsolidatedPDF statusData={statusData} typeData={typeData} overTimeData={sortedTimeData} employeesData={employeesData} pendingDocsData={sortedPendingDocs} />}
             fileName="reporte-general-peopleportal.pdf"
           >
             {({ loading: l }) => (
-              <Button variant="contained" startIcon={<DownloadIcon />} disabled={l} size="large">
+              <Button variant="contained" startIcon={<DownloadIcon />} disabled={l} size="large" sx={{ position: 'relative', zIndex: 1, background: 'linear-gradient(135deg, #10B981, #059669)', fontWeight: 700 }}>
                 {l ? 'Generando…' : 'Descargar Reporte General PDF'}
               </Button>
             )}
           </PDFDownloadLink>
         )}
-      </Box>
+        <Box sx={{
+          position: 'absolute', right: -40, top: -40, width: 220, height: 220, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(255,255,255,0) 70%)', zIndex: 0
+        }} />
+      </Paper>
 
       <Grid container spacing={3}>
 
@@ -696,21 +758,21 @@ export default function Reports() {
           <Card>
             <CardContent>
               <SectionHeader title="Tendencia de Solicitudes en el Tiempo"
-                pdfDoc={overTimeData.length > 0 ? <RequestsOverTimePDF data={overTimeData} /> : null}
+                pdfDoc={sortedTimeData.length > 0 ? <RequestsOverTimePDF data={sortedTimeData} /> : null}
                 pdfName="solicitudes-tendencia" />
               <Box sx={{ height: 220 }}>
-                {overTimeData.length > 0
+                {sortedTimeData.length > 0
                   ? <Line data={timeChart} options={lineOpts} />
                   : <Typography color="text.secondary">Sin datos</Typography>}
               </Box>
               <Divider sx={{ my: 2 }} />
               <ReportTable
-                data={overTimeData}
+                data={sortedTimeData}
                 columns={[
                   { key: 'period', label: 'Período' },
                   { key: 'count',  label: 'Solicitudes' },
                   { key: 'diff',   label: 'vs Promedio', render: r => {
-                    const avg  = overTimeData.reduce((s, x) => s + x.count, 0) / (overTimeData.length || 1);
+                    const avg  = sortedTimeData.reduce((s, x) => s + x.count, 0) / (sortedTimeData.length || 1);
                     const diff = r.count - avg;
                     return <Typography variant="caption" fontWeight={600} color={diff > 0 ? 'success.main' : diff < 0 ? 'error.main' : 'text.secondary'}>{diff > 0 ? `+${diff.toFixed(1)}` : diff.toFixed(1)}</Typography>;
                   }},
@@ -763,9 +825,9 @@ export default function Reports() {
           <Card>
             <CardContent>
               <SectionHeader title="Documentos Pendientes por Empleado"
-                pdfDoc={pendingDocsData.length > 0 ? <PendingDocumentsPDF data={pendingDocsData} /> : null}
+                pdfDoc={sortedPendingDocs.length > 0 ? <PendingDocumentsPDF data={sortedPendingDocs} /> : null}
                 pdfName="documentos-pendientes" />
-              {pendingDocsData.length > 0 ? (
+              {sortedPendingDocs.length > 0 ? (
                 <>
                   <Box sx={{ height: 240, mb: 2 }}>
                     <Bar data={pendingChart} options={pendingBarOpts} />
@@ -774,7 +836,7 @@ export default function Reports() {
                 </>
               ) : null}
               <ReportTable
-                data={[...pendingDocsData].sort((a, b) => (b.pendingCount + b.expiredCount) - (a.pendingCount + a.expiredCount))}
+                data={sortedPendingDocs}
                 columns={[
                   { key: 'employeeName', label: 'Empleado' },
                   { key: 'department',   label: 'Departamento', render: r => r.department || '—' },
