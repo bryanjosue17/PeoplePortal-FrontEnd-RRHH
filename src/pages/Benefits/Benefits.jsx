@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -12,7 +13,7 @@ import { useFormik } from 'formik';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
-import { createBenefit, deactivateBenefit, getAllBenefits, updateBenefit } from '../../api/benefits';
+import { createBenefit, deactivateBenefit, activateBenefit, getAllBenefits, updateBenefit } from '../../api/benefits';
 
 const typeColors = {
   'Alimentación': 'success', Bienestar: 'secondary', 'Bonificación': 'info', Descuento: 'default', 'Educación': 'primary', Salud: 'error', Transporte: 'warning',
@@ -86,6 +87,16 @@ export default function Benefits() {
   const handleDeactivate = async (id, name) => {
     setConfirmId(id);
     setConfirmName(name);
+  };
+
+  const handleActivate = async (id) => {
+    try {
+      await activateBenefit(id);
+      toast.success('Beneficio reactivado exitosamente');
+      load();
+    } catch (err) {
+      toast.error(err.message || 'Error al reactivar beneficio');
+    }
   };
 
   const handleConfirmDeactivate = async () => {
@@ -194,9 +205,15 @@ export default function Benefits() {
                     <Tooltip title="Editar">
                       <IconButton size="small" onClick={() => handleOpenEdit(benefit)}><EditIcon fontSize="small" /></IconButton>
                     </Tooltip>
-                    {benefit.isActive && (
+                    {benefit.isActive ? (
                       <Tooltip title="Desactivar">
                         <IconButton size="small" color="error" onClick={() => handleDeactivate(benefit.id, benefit.name)}><DeleteIcon fontSize="small" /></IconButton>
+                      </Tooltip>
+                    ) : (
+                      <Tooltip title="Reactivar">
+                        <IconButton size="small" color="success" onClick={() => handleActivate(benefit.id)}>
+                          <CheckCircleIcon fontSize="small" />
+                        </IconButton>
                       </Tooltip>
                     )}
                   </Box>
