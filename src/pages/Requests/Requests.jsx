@@ -24,6 +24,7 @@ export default function Requests() {
   const [hrComment, setHrComment]   = useState('');
   const [page, setPage]             = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [confirmRejectId, setConfirmRejectId] = useState(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -63,6 +64,18 @@ export default function Requests() {
       load();
     } catch {
       toast.error('Error al actualizar solicitud');
+    }
+  };
+
+  const handleConfirmReject = async () => {
+    const id = confirmRejectId;
+    setConfirmRejectId(null);
+    try {
+      await updateRequestStatus(id, { status: 'Rejected' });
+      toast.success('Solicitud rechazada');
+      load();
+    } catch {
+      toast.error('Error al rechazar solicitud');
     }
   };
 
@@ -164,7 +177,7 @@ export default function Requests() {
                     {(req.status === 'Submitted' || req.status === 'InReview') && (
                       <Stack direction={{ sm: 'row', xs: 'column' }} spacing={0.5} onClick={(e) => e.stopPropagation()}>
                         <Button size="small" color="success" variant="outlined" onClick={() => handleStatusChange(req.id, 'Approved')}>Aprobar</Button>
-                        <Button size="small" color="error" variant="outlined" onClick={() => handleStatusChange(req.id, 'Rejected')}>Rechazar</Button>
+                        <Button size="small" color="error" variant="outlined" onClick={() => setConfirmRejectId(req.id)}>Rechazar</Button>
                       </Stack>
                     )}
                   </TableCell>
@@ -222,6 +235,18 @@ export default function Requests() {
             </>
           )}
           <Button onClick={() => setDetailOpen(false)}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog de confirmación de rechazo inline */}
+      <Dialog open={Boolean(confirmRejectId)} onClose={() => setConfirmRejectId(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Rechazar solicitud</DialogTitle>
+        <DialogContent>
+          <Typography>¿Confirmas que deseas rechazar esta solicitud? El colaborador será notificado del estado.</Typography>
+        </DialogContent>
+        <DialogActions sx={{ pb: 2, px: 3 }}>
+          <Button onClick={() => setConfirmRejectId(null)}>Cancelar</Button>
+          <Button variant="contained" color="error" onClick={handleConfirmReject}>Rechazar</Button>
         </DialogActions>
       </Dialog>
     </Box>
