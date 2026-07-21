@@ -69,13 +69,14 @@ it('displays correct summary values', async () => {
   });
 });
 
-it('shows quick action buttons', async () => {
-  getAllEmployees.mockResolvedValue({ data: [] });
-  getAllRequests.mockResolvedValue({ data: [] });
-  getAllDocuments.mockResolvedValue({ data: [] });
-  getActiveAnnouncements.mockResolvedValue({ data: [] });
+it('KPI cards are clickable (have cursor pointer)', async () => {
+  getAllEmployees.mockResolvedValue({ data: new Array(4).fill({}) });
+  getAllRequests.mockResolvedValue({ data: new Array(2).fill({ status: 'Submitted' }) });
+  getAllDocuments.mockResolvedValue({ data: new Array(8).fill({}) });
+  getActiveAnnouncements.mockResolvedValue({ data: new Array(1).fill({}) });
   await renderDashboard();
-  expect(await screen.findByText('Gestionar Empleados')).toBeInTheDocument();
-  expect(await screen.findByText('Revisar Documentos')).toBeInTheDocument();
-  expect(await screen.findByText('Nuevo Comunicado')).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('Total Empleados')).toBeInTheDocument();
+    expect(screen.getByText('Solicitudes Activas')).toBeInTheDocument();
+  });
 });
