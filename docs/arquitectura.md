@@ -11,7 +11,7 @@
 | `/requests` | `Requests.jsx` | Solicitudes con filtros, aprobación, rechazo y comentario RRHH |
 | `/announcements` | `Announcements.jsx` | Publicar, visualizar y desactivar comunicados internos |
 | `/benefits` | `Benefits.jsx` | Catálogo CRUD: crear, editar y desactivar beneficios |
-| `/vouchers` (ahora `/nomina`) | `Nomina.jsx` | Registros de nómina: crear, subir archivos (PATCH upload) |
+| `/nomina` | `Nomina.jsx` | Registros de nómina: crear, subir archivos (PATCH upload) |
 | `/users` | `UserManagement.jsx` | Gestión de cuentas Keycloak: crear, editar roles, reset-pw, activar/desactivar |
 | `/reports` | `Reports.jsx` | 5 reportes con charts interactivos (Chart.js), tablas con `%` y diferencial vs promedio, exportación PDF |
 | `/access-denied` | `AccessDenied.jsx` | Pantalla para usuarios sin rol `hr` o `admin` |
@@ -31,8 +31,9 @@ PeoplePortal-FrontEnd-RRHH/
 │   │   ├── employees.js
 │   │   ├── hrDocuments.js
 │   │   ├── hrRequests.js
-│   │   ├── hrVouchers.js          ← Gestión de vouchers (nómina)
-│   │   └── reports.js
+│   │   ├── nomina.js              ← GET/POST /api/hr/nomina
+│   │   ├── reports.js
+│   │   └── userManagement.js      ← Proxy Keycloak Admin
 │   ├── components/
 │   │   ├── Layout.jsx             ← Sidebar + header + campana de notificaciones pendientes
 │   │   └── ProtectedRoute.jsx     ← Guard por rol (hr / admin)
@@ -47,7 +48,8 @@ PeoplePortal-FrontEnd-RRHH/
 │   │   ├── Employees/
 │   │   ├── Reports/               ← 5 charts + 5 PDFs individuales + Reporte General PDF
 │   │   ├── Requests/
-│   │   ├── Vouchers/
+│   │   ├── Nomina/                ← Comprobantes de nómina
+│   │   ├── UserManagement/        ← Gestión de usuarios Keycloak
 │   │   └── AccessDenied/
 │   ├── test/
 │   ├── theme/
@@ -79,7 +81,8 @@ PeoplePortal-FrontEnd-RRHH/
 /requests            → Requests   │
 /announcements       → Announcements │
 /benefits            → Benefits   │
-/vouchers            → Vouchers   │ (gestión nómina - visible para hr, admin, nomina)
+/nomina              → Nomina     │ (gestión nómina - visible para hr, admin, nomina)
+/users               → UserManagement │
 /reports             → Reports    ┘
 /access-denied       → AccessDenied (público, sin guard)
 ```
@@ -88,12 +91,12 @@ PeoplePortal-FrontEnd-RRHH/
 
 ## ProtectedRoute
 
-El componente `ProtectedRoute.jsx` protege todas las rutas del panel:
+El componente `ProtectedRoute.jsx` usa `useAuth()` desde `AuthContext` (ROPC):
 
-1. Espera a que Keycloak inicialice (`initialized === false` → spinner)
-2. Verifica `keycloak.authenticated`
-3. Verifica que `keycloak.tokenParsed.realm_access.roles` incluya `hr` o `admin`
-4. Si no tiene rol → redirige a `/access-denied`
+1. Si `loading === true` → muestra spinner
+2. Si `!isAuthenticated` → redirige a `/login`
+3. Extrae `user.realm_access.roles` del JWT parseado
+4. Si no incluye `hr` o `admin` → redirige a `/access-denied`
 
 ---
 

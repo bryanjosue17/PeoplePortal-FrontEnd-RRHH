@@ -71,7 +71,8 @@ Base URL: configurada por `VITE_API_URL` (vacío = misma origin).
 | `GET` | `/api/hr/benefits` | Benefits | Todos los beneficios (incluso inactivos) |
 | `POST` | `/api/hr/benefits` | Benefits | Crear beneficio |
 | `PUT` | `/api/hr/benefits/:id` | Benefits | Actualizar beneficio |
-| `DELETE` | `/api/hr/benefits/:id` | Benefits | Desactivar beneficio |
+| `DELETE` | `/api/hr/benefits/:id` | Benefits | Desactivar beneficio (soft-delete) |
+| `PATCH` | `/api/hr/benefits/:id/activate` | Benefits | Reactivar beneficio inactivo |
 
 ---
 
@@ -86,3 +87,19 @@ Base URL: configurada por `VITE_API_URL` (vacío = misma origin).
 | `GET` | `/api/hr/reports/pending-documents` | Reports | Documentos pendientes de revisión |
 
 > Los reportes se renderizan en tablas dinámicas y pueden exportarse a PDF usando `@react-pdf/renderer`.
+
+---
+
+## Gestión de Usuarios (Keycloak Admin)
+
+> Solo accesible con rol `hr` o `admin`. Proxy a la Keycloak Admin REST API.
+
+| Método | Ruta | Página | Descripción |
+|---|---|---|---|
+| `GET` | `/api/hr/users` | UserManagement | Listar usuarios Keycloak con empleado vinculado y roles |
+| `GET` | `/api/hr/users/roles` | UserManagement | Listar roles del realm disponibles |
+| `GET` | `/api/hr/users/:id/roles` | UserManagement | Roles actuales de un usuario |
+| `POST` | `/api/hr/users` | UserManagement | Crear usuario en Keycloak |
+| `PATCH` | `/api/hr/users/:id/enabled` | UserManagement | Habilitar / deshabilitar usuario |
+| `PUT` | `/api/hr/users/:id/roles` | UserManagement | Reemplazar roles del usuario |
+| `POST` | `/api/hr/users/:id/reset-password` | UserManagement | Restablecer contraseña |
