@@ -2,10 +2,9 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PeopleIcon from '@mui/icons-material/People';
-import SpeedIcon from '@mui/icons-material/Speed';
 import SecurityIcon from '@mui/icons-material/Security';
 import {
-  Box, Button, Card, CardContent, CircularProgress, Grid, Typography, Paper, Chip
+  Box, Card, CardContent, CircularProgress, Grid, Typography, Paper, Chip
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
 import {
@@ -65,10 +64,10 @@ export default function Dashboard() {
   }
 
   const summaryCards = [
-    { color: '#10B981', icon: <PeopleIcon sx={{ fontSize: 28 }} />, label: 'Total Empleados', value: data?.totalEmployees ?? 0 },
-    { color: '#ed6c02', icon: <AssignmentIcon sx={{ fontSize: 28 }} />, label: 'Solicitudes Activas', value: data?.pendingRequests ?? 0 },
-    { color: '#3B82F6', icon: <DescriptionIcon sx={{ fontSize: 28 }} />, label: 'Documentos Activos', value: data?.activeDocuments ?? 0 },
-    { color: '#8B5CF6', icon: <CampaignIcon sx={{ fontSize: 28 }} />, label: 'Comunicados Recientes', value: data?.recentAnnouncements ?? 0 },
+    { color: '#10B981', icon: <PeopleIcon sx={{ fontSize: 28 }} />, label: 'Total Empleados',       value: data?.totalEmployees ?? 0,     path: '/employees' },
+    { color: '#ed6c02', icon: <AssignmentIcon sx={{ fontSize: 28 }} />, label: 'Solicitudes Activas',  value: data?.pendingRequests ?? 0,    path: '/requests' },
+    { color: '#3B82F6', icon: <DescriptionIcon sx={{ fontSize: 28 }} />, label: 'Documentos Activos',   value: data?.activeDocuments ?? 0,    path: '/documents' },
+    { color: '#8B5CF6', icon: <CampaignIcon sx={{ fontSize: 28 }} />, label: 'Comunicados Recientes', value: data?.recentAnnouncements ?? 0, path: '/announcements' },
   ];
 
   const userName = user?.name || user?.preferred_username || 'Administrador';
@@ -136,7 +135,8 @@ export default function Dashboard() {
       <Grid container spacing={3}>
         {summaryCards.map((card) => (
           <Grid size={{ md: 3, sm: 6, xs: 12 }} key={card.label}>
-            <Card sx={{
+            <Card onClick={() => navigate(card.path)} sx={{
+              cursor: 'pointer',
               background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%)',
               backdropFilter: 'blur(12px)',
               border: '1px solid',
@@ -175,56 +175,6 @@ export default function Dashboard() {
             </Card>
           </Grid>
         ))}
-      </Grid>
-
-      <Typography variant="h5" fontWeight={750} sx={{ mb: 2.5, mt: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
-        <SpeedIcon color="primary" /> Acciones Rápidas
-      </Typography>
-      <Grid container spacing={2.5}>
-        <Grid size={{ sm: 3, xs: 6 }}>
-          <Button variant="contained" fullWidth sx={{ 
-            py: 2.5, borderRadius: 2.5, fontWeight: 700,
-            background: 'linear-gradient(135deg, #10B981, #059669)',
-            boxShadow: '0 6px 16px rgba(16,185,129,0.25)',
-            transition: 'transform 0.2s',
-            '&:hover': { transform: 'translateY(-2px)' }
-          }} onClick={() => navigate('/employees')}>
-            Gestionar Empleados
-          </Button>
-        </Grid>
-        <Grid size={{ sm: 3, xs: 6 }}>
-          <Button variant="contained" fullWidth sx={{ 
-            py: 2.5, borderRadius: 2.5, fontWeight: 700,
-            background: 'linear-gradient(135deg, #3B82F6, #2563EB)',
-            boxShadow: '0 6px 16px rgba(59,130,246,0.25)',
-            transition: 'transform 0.2s',
-            '&:hover': { transform: 'translateY(-2px)' }
-          }} onClick={() => navigate('/documents')}>
-            Revisar Documentos
-          </Button>
-        </Grid>
-        <Grid size={{ sm: 3, xs: 6 }}>
-          <Button variant="contained" fullWidth sx={{ 
-            py: 2.5, borderRadius: 2.5, fontWeight: 700,
-            background: 'linear-gradient(135deg, #F59E0B, #D97706)',
-            boxShadow: '0 6px 16px rgba(245,158,11,0.25)',
-            transition: 'transform 0.2s',
-            '&:hover': { transform: 'translateY(-2px)' }
-          }} onClick={() => navigate('/requests')}>
-            Solicitudes Pendientes
-          </Button>
-        </Grid>
-        <Grid size={{ sm: 3, xs: 6 }}>
-          <Button variant="contained" fullWidth sx={{ 
-            py: 2.5, borderRadius: 2.5, fontWeight: 700,
-            background: 'linear-gradient(135deg, #8B5CF6, #6D28D9)',
-            boxShadow: '0 6px 16px rgba(139,92,246,0.25)',
-            transition: 'transform 0.2s',
-            '&:hover': { transform: 'translateY(-2px)' }
-          }} onClick={() => navigate('/announcements')}>
-            Nuevo Comunicado
-          </Button>
-        </Grid>
       </Grid>
 
       {/* ── Charts section ── */}
