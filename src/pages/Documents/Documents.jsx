@@ -34,6 +34,7 @@ export default function Documents() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [page, setPage]               = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [confirmRejectId, setConfirmRejectId] = useState(null);
 
   const formik = useFormik({
     initialValues: { expiresAt: '', fileUrl: '', name: '', type: '' },
@@ -78,12 +79,28 @@ export default function Documents() {
   const paginated = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const handleStatusChange = async (id, status) => {
+    if (status === 'Rejected') {
+      setConfirmRejectId(id);
+      return;
+    }
     try {
       await updateDocumentStatus(id, { status });
-      toast.success(`Documento ${status === 'Approved' ? 'aprobado' : 'rechazado'} exitosamente`);
+      toast.success('Documento aprobado exitosamente');
       load();
     } catch {
       toast.error('Error al actualizar estado del documento');
+    }
+  };
+
+  const handleConfirmReject = async () => {
+    const id = confirmRejectId;
+    setConfirmRejectId(null);
+    try {
+      await updateDocumentStatus(id, { status: 'Rejected' });
+      toast.success('Documento rechazado');
+      load();
+    } catch {
+      toast.error('Error al rechazar documento');
     }
   };
 
@@ -272,6 +289,18 @@ export default function Documents() {
             </Button>
           </DialogActions>
         </Box>
+      </Dialog>
+
+      {/* Dialog de confirmación de rechazo */}
+      <Dialog open={Boolean(confirmRejectId)} onClose={() => setConfirmRejectId(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Rechazar documento</DialogTitle>
+        <DialogContent>
+          <Typography>¿Confirmas que deseas rechazar este documento? Esta acción cambiará su estado a "Rechazado".</Typography>
+        </DialogContent>
+        <DialogActions sx={{ pb: 2, px: 3 }}>
+          <Button onClick={() => setConfirmRejectId(null)}>Cancelar</Button>
+          <Button variant="contained" color="error" onClick={handleConfirmReject}>Rechazar</Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );

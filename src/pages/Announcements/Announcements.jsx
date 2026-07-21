@@ -24,6 +24,8 @@ export default function Announcements() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmId, setConfirmId] = useState(null);
+  const [confirmTitle, setConfirmTitle] = useState('');
 
   const formik = useFormik({
     initialValues: { body: '', expiresAt: '', title: '', type: 'News' },
@@ -51,7 +53,14 @@ export default function Announcements() {
 
   useEffect(() => { load(); }, []);
 
-  const handleDeactivate = async (id) => {
+  const handleDeactivate = (id, title) => {
+    setConfirmId(id);
+    setConfirmTitle(title);
+  };
+
+  const handleConfirmDeactivate = async () => {
+    const id = confirmId;
+    setConfirmId(null);
     try {
       await deactivateAnnouncement(id);
       toast.success('Comunicado desactivado');
@@ -156,7 +165,7 @@ export default function Announcements() {
                 </CardContent>
                 {ann.status !== 'Inactive' && (
                   <CardActions>
-                    <Button size="small" color="error" onClick={() => handleDeactivate(ann.id)}>Desactivar</Button>
+                    <Button size="small" color="error" onClick={() => handleDeactivate(ann.id, ann.title)}>Desactivar</Button>
                   </CardActions>
                 )}
               </Card>
@@ -164,6 +173,18 @@ export default function Announcements() {
           ))}
         </Grid>
       )}
+
+      {/* Dialog de confirmación de desactivación */}
+      <Dialog open={Boolean(confirmId)} onClose={() => setConfirmId(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Desactivar comunicado</DialogTitle>
+        <DialogContent>
+          <Typography>¿Deseas desactivar el comunicado <strong>"{confirmTitle}"</strong>? Dejará de ser visible para los colaboradores.</Typography>
+        </DialogContent>
+        <DialogActions sx={{ pb: 2, px: 3 }}>
+          <Button onClick={() => setConfirmId(null)}>Cancelar</Button>
+          <Button variant="contained" color="error" onClick={handleConfirmDeactivate}>Desactivar</Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={dialogOpen} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>Nuevo Comunicado</DialogTitle>
